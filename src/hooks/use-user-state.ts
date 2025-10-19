@@ -41,6 +41,7 @@ export function useUserState() {
   }, [toastsToShow, toast]);
 
   useEffect(() => {
+    setLoading(true);
     try {
       const storedState = localStorage.getItem('supercharge_state');
       if (storedState) {
@@ -74,7 +75,11 @@ export function useUserState() {
   const updateState = (updater: (prevState: UserState) => UserState) => {
     setState(prevState => {
       const newState = updater(prevState);
-      localStorage.setItem('supercharge_state', JSON.stringify(newState));
+      try {
+        localStorage.setItem('supercharge_state', JSON.stringify(newState));
+      } catch (error) {
+        console.error("Failed to save state to localStorage", error);
+      }
       return newState;
     });
   };
@@ -235,7 +240,6 @@ export function useUserState() {
   const resetState = () => {
     localStorage.removeItem('supercharge_state');
     setState(getInitialState());
-    setLoading(false); // Make sure loading is set to false
     setToastsToShow(toasts => [...toasts, {
         title: "تم البدء من جديد!",
         description: "تمت إعادة ضبط تقدمك. رحلة جديدة تبدأ الآن!",

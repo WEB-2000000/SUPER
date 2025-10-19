@@ -21,6 +21,13 @@ import {
 import { Trash2, Settings, Home, TrendingUp, ListTodo, Zap } from 'lucide-react';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import Link from 'next/link';
+import OnboardingForm from '@/components/onboarding-form';
+
+const Logo = () => (
+    <div className="bg-primary/10 p-4 rounded-full mb-6">
+        <Zap className="w-16 h-16 text-primary" />
+    </div>
+);
 
 export default function RoutinePage() {
   const {
@@ -29,21 +36,31 @@ export default function RoutinePage() {
     completeTask,
     generateRoutine,
     isGeneratingRoutine,
-    resetState
+    resetState,
+    setUser
   } = useUserState();
 
   const today = useMemo(() => new Date().toISOString().split('T')[0], []);
 
-  if (loading || !state.user) {
+  if (loading) {
     return (
       <div className="flex flex-col items-center justify-center min-h-screen bg-background p-4">
-        <div className="bg-primary/10 p-4 rounded-full mb-6">
-            <Zap className="w-16 h-16 text-primary" />
-        </div>
+        <Logo />
         <h1 className="text-4xl font-headline font-black text-primary tracking-wider uppercase">Super Charge</h1>
         <p className="text-muted-foreground mt-2">جاري تحميل رحلتك الملحمية...</p>
       </div>
     );
+  }
+
+  if (!state.user) {
+    return (
+      <OnboardingForm
+        open={true}
+        setUser={setUser}
+        generateRoutine={generateRoutine}
+        isGeneratingRoutine={isGeneratingRoutine}
+      />
+    )
   }
 
   return (

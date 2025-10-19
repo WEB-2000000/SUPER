@@ -1,7 +1,7 @@
 
 'use client';
 
-import React, { useMemo } from 'react';
+import React from 'react';
 import { useUserState } from '@/hooks/use-user-state';
 import OnboardingForm from '@/components/onboarding-form';
 import GamificationSummary from '@/components/gamification-summary';
@@ -51,15 +51,20 @@ export default function SuperChargePage() {
     );
   }
 
-  return (
-    <>
-      <OnboardingForm
-        open={!state.user}
+  if (!state.user) {
+    return (
+       <OnboardingForm
+        open={true}
         setUser={setUser}
         generateRoutine={generateRoutine}
         isGeneratingRoutine={isGeneratingRoutine}
       />
-      {state.user && (
+    )
+  }
+
+  return (
+    <>
+      
         <SidebarProvider>
             <Sidebar side="right" variant='sidebar' collapsible="icon">
                 <SidebarHeader className="items-center text-center p-4 border-b">
@@ -159,7 +164,7 @@ export default function SuperChargePage() {
             </div>
           </main>
         </SidebarProvider>
-      )}
+      
     </>
   );
 }

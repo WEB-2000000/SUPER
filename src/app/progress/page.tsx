@@ -21,26 +21,45 @@ import {
 import { Trash2, Settings, Home, TrendingUp, ListTodo, Zap } from 'lucide-react';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import Link from 'next/link';
+import OnboardingForm from '@/components/onboarding-form';
+
+const Logo = () => (
+    <div className="bg-primary/10 p-4 rounded-full mb-6">
+        <Zap className="w-16 h-16 text-primary" />
+    </div>
+);
 
 export default function ProgressPage() {
   const {
     state,
     loading,
-    resetState
+    resetState,
+    setUser,
+    generateRoutine,
+    isGeneratingRoutine,
   } = useUserState();
 
-  if (loading || !state.user) {
+  if (loading) {
     return (
       <div className="flex flex-col items-center justify-center min-h-screen bg-background p-4">
-        <div className="bg-primary/10 p-4 rounded-full mb-6">
-            <Zap className="w-16 h-16 text-primary" />
-        </div>
+        <Logo />
         <h1 className="text-4xl font-headline font-black text-primary tracking-wider uppercase">Super Charge</h1>
         <p className="text-muted-foreground mt-2">جاري تحميل رحلتك الملحمية...</p>
       </div>
     );
   }
 
+  if (!state.user) {
+    return (
+       <OnboardingForm
+        open={true}
+        setUser={setUser}
+        generateRoutine={generateRoutine}
+        isGeneratingRoutine={isGeneratingRoutine}
+      />
+    )
+  }
+  
   return (
     <SidebarProvider>
       <Sidebar side="right" variant='sidebar' collapsible="icon">
