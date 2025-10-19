@@ -6,7 +6,6 @@ import { useUserState } from '@/hooks/use-user-state';
 import OnboardingForm from '@/components/onboarding-form';
 import GamificationSummary from '@/components/gamification-summary';
 import DailyMotivation from '@/components/daily-motivation';
-import DailyRoutine from '@/components/daily-routine';
 import ProgressCharts from '@/components/progress-charts';
 import AchievementsList from '@/components/achievements-list';
 import {
@@ -21,14 +20,23 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
 import { Button } from '@/components/ui/button';
-import { Trash2, Settings, User as UserIcon, Zap } from 'lucide-react';
-import { SidebarProvider, Sidebar, SidebarTrigger, SidebarContent, SidebarHeader, SidebarInset, SidebarFooter, SidebarMenu, SidebarMenuItem, SidebarMenuButton } from '@/components/ui/sidebar';
+import { Trash2, Settings, ListTodo } from 'lucide-react';
+import { SidebarProvider, Sidebar, SidebarTrigger, SidebarContent, SidebarHeader, SidebarFooter, SidebarMenu, SidebarMenuItem, SidebarMenuButton } from '@/components/ui/sidebar';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import Link from 'next/link';
 
 
 const Logo = () => (
     <div className="bg-primary/10 p-4 rounded-full mb-6">
-        <Zap className="w-16 h-16 text-primary" />
+        <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 24 24"
+            fill="currentColor"
+            className="w-16 h-16 text-primary"
+        >
+            <path d="M14.25 2.25A5.25 5.25 0 0 0 9 7.5v9.014a3.736 3.736 0 0 1-2.25.986.75.75 0 0 0-.75.75v.75a.75.75 0 0 0 .75.75h4.5a.75.75 0 0 0 .75-.75v-.75a.75.75 0 0 0-.75-.75 3.736 3.736 0 0 1-2.25-.986V7.5a3.75 3.75 0 0 1 3.75-3.75h.75a.75.75 0 0 0 .75-.75V2.25a.75.75 0 0 0-.75-.75h-.75Z" />
+            <path d="M15 3.75a.75.75 0 0 0-.75.75v.75a.75.75 0 0 0 .75.75h.75a5.25 5.25 0 0 1 5.25 5.25v9.014a3.736 3.736 0 0 0 2.25.986.75.75 0 0 1 .75.75v.75a.75.75 0 0 1-.75.75h-4.5a.75.75 0 0 1-.75-.75v-.75a.75.75 0 0 1 .75-.75 3.736 3.736 0 0 0 2.25-.986V10.5a3.75 3.75 0 0 0-3.75-3.75h-.75a.75.75 0 0 1-.75-.75V5.25a.75.75 0 0 1 .75-.75h.75Z" />
+        </svg>
     </div>
 );
 
@@ -38,12 +46,9 @@ export default function SuperChargePage() {
     loading,
     setUser,
     generateRoutine,
-    completeTask,
     isGeneratingRoutine,
     resetState,
   } = useUserState();
-
-  const today = useMemo(() => new Date().toISOString().split('T')[0], []);
 
   if (loading) {
     return (
@@ -81,6 +86,16 @@ export default function SuperChargePage() {
                     <div className="group-data-[collapsible=icon]:p-0">
                         <GamificationSummary progress={state.progress} />
                     </div>
+                     <SidebarMenu>
+                       <SidebarMenuItem>
+                         <Link href="/routine" passHref>
+                            <SidebarMenuButton tooltip="خطتي اليومية">
+                                <ListTodo />
+                                <span className="group-data-[collapsible=icon]:hidden">خطتي اليومية</span>
+                            </SidebarMenuButton>
+                         </Link>
+                       </SidebarMenuItem>
+                     </SidebarMenu>
                     <AchievementsList
                         unlockedAchievements={state.unlockedAchievements}
                     />
@@ -121,7 +136,7 @@ export default function SuperChargePage() {
                 </SidebarFooter>
             </Sidebar>
 
-          <SidebarInset>
+          <main className="relative flex min-h-svh flex-1 flex-col bg-background peer-data-[variant=inset]:min-h-[calc(100svh-theme(spacing.4))] md:peer-data-[variant=inset]:m-2 md:peer-data-[state=collapsed]:peer-data-[variant=inset]:ml-2 md:peer-data-[variant=inset]:ml-0 md:peer-data-[variant=inset]:rounded-xl md:peer-data-[variant=inset]:shadow">
             <header className="sticky top-0 z-10 bg-background/80 backdrop-blur-md border-b">
                 <div className="container mx-auto flex items-center justify-between p-4">
                 <h1 className="text-2xl font-headline font-black text-primary tracking-wider uppercase">
@@ -131,17 +146,10 @@ export default function SuperChargePage() {
                 </div>
             </header>
             
-            <main className="container mx-auto p-4 sm:p-6 md:p-8 flex-grow">
+            <div className="container mx-auto p-4 sm:p-6 md:p-8 flex-grow">
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 xl:gap-8">
                     
                     <div className="lg:col-span-2 space-y-6 xl:space-y-8">
-                        <DailyRoutine
-                            routine={state.routine}
-                            completeTask={completeTask}
-                            generateRoutine={generateRoutine}
-                            isGeneratingRoutine={isGeneratingRoutine}
-                            today={today}
-                        />
                          <ProgressCharts completedTasksLog={state.completedTasksLog} />
                     </div>
 
@@ -153,8 +161,8 @@ export default function SuperChargePage() {
                     </div>
 
                 </div>
-            </main>
-          </SidebarInset>
+            </div>
+          </main>
         </SidebarProvider>
       )}
     </>
