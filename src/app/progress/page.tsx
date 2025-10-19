@@ -1,9 +1,9 @@
 
 'use client';
 
-import React, { useMemo } from 'react';
+import React from 'react';
 import { useUserState } from '@/hooks/use-user-state';
-import DailyRoutine from '@/components/daily-routine';
+import ProgressCharts from '@/components/progress-charts';
 import { SidebarProvider, Sidebar, SidebarTrigger, SidebarContent, SidebarHeader, SidebarFooter, SidebarMenu, SidebarMenuItem, SidebarMenuButton } from '@/components/ui/sidebar';
 import GamificationSummary from '@/components/gamification-summary';
 import AchievementsList from '@/components/achievements-list';
@@ -22,17 +22,12 @@ import { Trash2, Settings, Home, TrendingUp, ListTodo } from 'lucide-react';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import Link from 'next/link';
 
-export default function RoutinePage() {
+export default function ProgressPage() {
   const {
     state,
     loading,
-    completeTask,
-    generateRoutine,
-    isGeneratingRoutine,
     resetState
   } = useUserState();
-
-  const today = useMemo(() => new Date().toISOString().split('T')[0], []);
 
   if (loading || !state.user) {
     return (
@@ -71,18 +66,18 @@ export default function RoutinePage() {
               </Link>
             </SidebarMenuItem>
             <SidebarMenuItem>
-                <SidebarMenuButton tooltip="خطتي اليومية" isActive>
+              <Link href="/routine" passHref>
+                <SidebarMenuButton tooltip="خطتي اليومية">
                     <ListTodo />
                     <span className="group-data-[collapsible=icon]:hidden">خطتي اليومية</span>
                 </SidebarMenuButton>
+              </Link>
             </SidebarMenuItem>
             <SidebarMenuItem>
-              <Link href="/progress" passHref>
-                <SidebarMenuButton tooltip="تتبع التقدم">
+                <SidebarMenuButton tooltip="تتبع التقدم" isActive>
                     <TrendingUp />
                     <span className="group-data-[collapsible=icon]:hidden">تتبع التقدم</span>
                 </SidebarMenuButton>
-              </Link>
             </SidebarMenuItem>
           </SidebarMenu>
           <AchievementsList
@@ -129,20 +124,14 @@ export default function RoutinePage() {
         <header className="sticky top-0 z-10 bg-background/80 backdrop-blur-md border-b">
             <div className="container mx-auto flex items-center justify-between p-4">
             <h1 className="text-2xl font-headline font-black text-primary tracking-wider uppercase">
-                خطة اليوم
+                تتبع التقدم
             </h1>
             <SidebarTrigger />
             </div>
         </header>
         
         <div className="container mx-auto p-4 sm:p-6 md:p-8 flex-grow">
-            <DailyRoutine
-                routine={state.routine}
-                completeTask={completeTask}
-                generateRoutine={generateRoutine}
-                isGeneratingRoutine={isGeneratingRoutine}
-                today={today}
-            />
+            <ProgressCharts completedTasksLog={state.completedTasksLog} />
         </div>
       </main>
     </SidebarProvider>

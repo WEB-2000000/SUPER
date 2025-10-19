@@ -6,7 +6,6 @@ import { useUserState } from '@/hooks/use-user-state';
 import OnboardingForm from '@/components/onboarding-form';
 import GamificationSummary from '@/components/gamification-summary';
 import DailyMotivation from '@/components/daily-motivation';
-import ProgressCharts from '@/components/progress-charts';
 import AchievementsList from '@/components/achievements-list';
 import {
   AlertDialog,
@@ -20,7 +19,7 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
 import { Button } from '@/components/ui/button';
-import { Trash2, Settings, ListTodo } from 'lucide-react';
+import { Trash2, Settings, ListTodo, TrendingUp } from 'lucide-react';
 import { SidebarProvider, Sidebar, SidebarTrigger, SidebarContent, SidebarHeader, SidebarFooter, SidebarMenu, SidebarMenuItem, SidebarMenuButton } from '@/components/ui/sidebar';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import Link from 'next/link';
@@ -95,6 +94,14 @@ export default function SuperChargePage() {
                             </SidebarMenuButton>
                          </Link>
                        </SidebarMenuItem>
+                       <SidebarMenuItem>
+                         <Link href="/progress" passHref>
+                            <SidebarMenuButton tooltip="تتبع التقدم">
+                                <TrendingUp />
+                                <span className="group-data-[collapsible=icon]:hidden">تتبع التقدم</span>
+                            </SidebarMenuButton>
+                         </Link>
+                       </SidebarMenuItem>
                      </SidebarMenu>
                     <AchievementsList
                         unlockedAchievements={state.unlockedAchievements}
@@ -149,11 +156,7 @@ export default function SuperChargePage() {
             <div className="container mx-auto p-4 sm:p-6 md:p-8 flex-grow">
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 xl:gap-8">
                     
-                    <div className="lg:col-span-2 space-y-6 xl:space-y-8">
-                         <ProgressCharts completedTasksLog={state.completedTasksLog} />
-                    </div>
-
-                    <div className="lg:col-span-1 space-y-6 xl:space-y-8">
+                    <div className="lg:col-span-3 space-y-6 xl:space-y-8">
                         <DailyMotivation
                             user={state.user}
                             dailyMotivation={state.dailyMotivation}
