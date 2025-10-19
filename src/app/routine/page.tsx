@@ -6,7 +6,6 @@ import { useUserState } from '@/hooks/use-user-state';
 import DailyRoutine from '@/components/daily-routine';
 import { SidebarProvider, Sidebar, SidebarTrigger, SidebarContent, SidebarHeader, SidebarFooter, SidebarMenu, SidebarMenuItem, SidebarMenuButton } from '@/components/ui/sidebar';
 import GamificationSummary from '@/components/gamification-summary';
-import AchievementsList from '@/components/achievements-list';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -18,16 +17,10 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
-import { Trash2, Settings, Home, TrendingUp, ListTodo, Zap } from 'lucide-react';
+import { Trash2, Settings, Home, TrendingUp, ListTodo } from 'lucide-react';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import Link from 'next/link';
 import OnboardingForm from '@/components/onboarding-form';
-
-const Logo = () => (
-    <div className="bg-primary/10 p-4 rounded-full mb-6">
-        <Zap className="w-16 h-16 text-primary" />
-    </div>
-);
 
 export default function RoutinePage() {
   const {
@@ -45,7 +38,6 @@ export default function RoutinePage() {
   if (loading) {
     return (
       <div className="flex flex-col items-center justify-center min-h-screen bg-background p-4">
-        <Logo />
         <h1 className="text-4xl font-headline font-black text-primary tracking-wider uppercase">Super Charge</h1>
         <p className="text-muted-foreground mt-2">جاري تحميل رحلتك الملحمية...</p>
       </div>
@@ -105,9 +97,6 @@ export default function RoutinePage() {
               </Link>
             </SidebarMenuItem>
           </SidebarMenu>
-          <AchievementsList
-              unlockedAchievements={state.unlockedAchievements}
-          />
         </SidebarContent>
         <SidebarFooter className="border-t p-2">
             <SidebarMenu>

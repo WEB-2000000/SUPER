@@ -44,7 +44,6 @@ export default function SuperChargePage() {
   if (loading) {
     return (
       <div className="flex flex-col items-center justify-center min-h-screen bg-background p-4">
-        <Logo />
         <h1 className="text-4xl font-headline font-black text-primary tracking-wider uppercase">Super Charge</h1>
         <p className="text-muted-foreground mt-2">جاري تحميل رحلتك الملحمية...</p>
       </div>
@@ -100,9 +99,6 @@ export default function SuperChargePage() {
                          </Link>
                        </SidebarMenuItem>
                      </SidebarMenu>
-                    <AchievementsList
-                        unlockedAchievements={state.unlockedAchievements}
-                    />
                 </SidebarContent>
                 <SidebarFooter className="border-t p-2">
                     <SidebarMenu>
@@ -157,6 +153,9 @@ export default function SuperChargePage() {
                         <DailyMotivation
                             user={state.user}
                             dailyMotivation={state.dailyMotivation}
+                        />
+                        <AchievementsList
+                          unlockedAchievements={state.unlockedAchievements}
                         />
                     </div>
 
