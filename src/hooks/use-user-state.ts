@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
@@ -31,14 +32,6 @@ export function useUserState() {
   const [loading, setLoading] = useState(true);
   const [isGeneratingRoutine, setIsGeneratingRoutine] = useState(false);
   const { toast } = useToast();
-  const [toastsToShow, setToastsToShow] = useState<any[]>([]);
-
-  useEffect(() => {
-    if (toastsToShow.length > 0) {
-      toastsToShow.forEach(t => toast(t));
-      setToastsToShow([]);
-    }
-  }, [toastsToShow, toast]);
 
   useEffect(() => {
     setLoading(true);
@@ -47,7 +40,7 @@ export function useUserState() {
       if (storedState) {
         const parsedState = JSON.parse(storedState) as UserState;
         
-        // Data migration/validation could happen here
+        // Data migration/validation
         if (!parsedState.progress) parsedState.progress = initialProgress;
         if (!parsedState.completedTasksLog) parsedState.completedTasksLog = [];
         if (!parsedState.lastRoutineResetDate) parsedState.lastRoutineResetDate = null;
@@ -61,17 +54,14 @@ export function useUserState() {
         }
         // Reset routine if it's a new day
         if (parsedState.lastRoutineResetDate !== today) {
-            resetRoutine(today);
+            resetRoutine(parsedState, today);
         }
-      } else {
-        setLoading(false);
       }
     } catch (error) {
       console.error('Failed to load state from localStorage', error);
       localStorage.removeItem('supercharge_state');
-      setLoading(false);
     } finally {
-        // This was changed from setLoading(false) to handle cases where state is loaded
+        setLoading(false);
     }
   }, []);
 
@@ -80,12 +70,6 @@ export function useUserState() {
       localStorage.setItem('supercharge_state', JSON.stringify(state));
     }
   }, [state, loading]);
-  
-  useEffect(() => {
-      if(state.user) {
-          setLoading(false);
-      }
-  }, [state.user])
 
 
   const fetchDailyMotivation = async (user: User, today: string) => {
@@ -109,22 +93,22 @@ export function useUserState() {
     const today = new Date().toISOString().split('T')[0];
     setState(s => {
       const newState = { ...getInitialState(), user, lastRoutineResetDate: today };
-      if (s.dailyMotivation && s.lastMotivationDate === today) {
-          newState.dailyMotivation = s.dailyMotivation;
-          newState.lastMotivationDate = s.lastMotivationDate;
-      } else {
+      if (!s.dailyMotivation || s.lastMotivationDate !== today) {
           fetchDailyMotivation(user, today);
+      } else {
+        newState.dailyMotivation = s.dailyMotivation;
+        newState.lastMotivationDate = s.lastMotivationDate;
       }
       return newState;
     });
   }, []);
   
-  const resetRoutine = (today: string) => {
-    setState(s => ({
-        ...s,
-        routine: s.routine.map(task => ({ ...task, completed: false, completedDate: undefined })),
+  const resetRoutine = (currentState: UserState, today: string) => {
+    setState({
+        ...currentState,
+        routine: currentState.routine.map(task => ({ ...task, completed: false, completedDate: undefined })),
         lastRoutineResetDate: today
-    }));
+    });
   };
 
   const generateRoutine = useCallback(async () => {
@@ -142,25 +126,72 @@ export function useUserState() {
         completed: false,
       }));
       setState(s => ({ ...s, routine: newRoutine }));
-      setToastsToShow(toasts => [...toasts, {
+      toast({
         title: "تم إنشاء خطتك!",
         description: "تم إنشاء خطتك اليومية الجديدة بنجاح.",
-      }]);
+      });
+      checkAchievements({ ...state, routine: newRoutine });
     } catch (error) {
       console.error('Failed to generate routine', error);
-      setToastsToShow(toasts => [...toasts, {
+      toast({
         title: "خطأ",
         description: "حدث خطأ أثناء إنشاء خطتك. الرجاء المحاولة مرة أخرى.",
         variant: "destructive",
-      }]);
+      });
     } finally {
       setIsGeneratingRoutine(false);
     }
-  }, [state.user]);
+  }, [state.user, toast, state]);
+
+  const checkAchievements = useCallback((newState: UserState) => {
+    const newToasts: any[] = [];
+    let achievementXp = 0;
+
+    const newlyUnlocked = achievements.filter(ach => 
+      !newState.unlockedAchievements.includes(ach.id) && 
+      ach.isUnlocked(newState.progress, newState.completedTasksLog, newState.routine)
+    ).map(ach => {
+      achievementXp += ach.xp;
+      newToasts.push({
+        title: `🏆 تم فتح إنجاز!`,
+        description: `${ach.name} (+${ach.xp} XP)`,
+      });
+      return ach.id;
+    });
+
+    if (newlyUnlocked.length > 0) {
+      let newXp = newState.progress.xp + achievementXp;
+      let newLevel = newState.progress.level;
+      let xpForNextLevel = getXPForNextLevel(newLevel);
+      
+      while (newXp >= xpForNextLevel) {
+          newXp -= xpForNextLevel;
+          newLevel++;
+          newToasts.push({
+              title: `🎉 وصلت إلى المستوى ${newLevel}!`,
+              description: `مكافأة الإنجاز دفعتك للأعلى!`,
+          });
+          xpForNextLevel = getXPForNextLevel(newLevel);
+      }
+
+      setState(s => ({
+        ...s,
+        unlockedAchievements: [...s.unlockedAchievements, ...newlyUnlocked],
+        progress: {
+          ...s.progress,
+          xp: newXp,
+          level: newLevel,
+        }
+      }));
+
+      newToasts.forEach(t => toast(t));
+    }
+
+  }, [toast]);
 
   const completeTask = useCallback((taskId: string) => {
     let completedTask: RoutineTask | undefined;
-    const newToasts: any[] = [];
+    let leveledUp = false;
 
     setState(s => {
       const newRoutine = s.routine.map(task => {
@@ -181,7 +212,6 @@ export function useUserState() {
       let newLevel = s.progress.level;
       let xpForNextLevel = getXPForNextLevel(newLevel);
       
-      let leveledUp = false;
       while (newXp >= xpForNextLevel) {
         newXp -= xpForNextLevel;
         newLevel++;
@@ -190,12 +220,12 @@ export function useUserState() {
       }
 
       if (leveledUp) {
-        newToasts.push({
+        toast({
             title: `🎉 وصلت إلى المستوى ${newLevel}!`,
             description: `رائع! استمر في التقدم.`,
         });
       } else {
-        newToasts.push({
+        toast({
             title: `+${XP_PER_TASK} XP!`,
             description: `"${completedTask.task}" مكتمل. عمل رائع!`,
         });
@@ -208,54 +238,29 @@ export function useUserState() {
         categoryCounts: newCategoryCounts,
       };
 
-      const newlyUnlocked: string[] = [];
-      let achievementXp = 0;
-      achievements.forEach(ach => {
-        if (!s.unlockedAchievements.includes(ach.id) && ach.isUnlocked(newProgress, newCompletedTasksLog)) {
-          newlyUnlocked.push(ach.id);
-          achievementXp += ach.xp;
-          newToasts.push({
-            title: `🏆 تم فتح إنجاز!`,
-            description: `${ach.name} (+${ach.xp} XP)`,
-          });
-        }
-      });
-      
-      newProgress.xp += achievementXp;
-      xpForNextLevel = getXPForNextLevel(newProgress.level);
-      while (newProgress.xp >= xpForNextLevel) {
-          newProgress.xp -= xpForNextLevel;
-          newProgress.level++;
-          newToasts.push({
-              title: `🎉 وصلت إلى المستوى ${newProgress.level}!`,
-              description: `مكافأة الإنجاز دفعتك للأعلى!`,
-          });
-          xpForNextLevel = getXPForNextLevel(newProgress.level);
-      }
-      
-      if (newToasts.length > 0) {
-        setToastsToShow(currentToasts => [...currentToasts, ...newToasts]);
-      }
-      
-      return {
+      const newState = {
         ...s,
         routine: newRoutine,
         progress: newProgress,
-        unlockedAchievements: [...s.unlockedAchievements, ...newlyUnlocked],
         completedTasksLog: newCompletedTasksLog,
       };
-    });
-  }, []);
+      
+      // We call this separately to avoid being in the setState callback
+      setTimeout(() => checkAchievements(newState), 0);
 
-  const resetState = () => {
+      return newState;
+    });
+  }, [toast, checkAchievements]);
+
+  const resetState = useCallback(() => {
     localStorage.removeItem('supercharge_state');
     setState(getInitialState());
     setLoading(false);
-    setToastsToShow(toasts => [...toasts, {
+    toast({
         title: "تم البدء من جديد!",
         description: "تمت إعادة ضبط تقدمك. رحلة جديدة تبدأ الآن!",
-    }]);
-  };
+    });
+  }, [toast]);
 
   useEffect(() => {
     if (!loading && state.routine.some(task => !task.id)) {

@@ -1,3 +1,4 @@
+
 import type { UserProgress, CompletedTaskLog } from './types';
 
 export interface User {
@@ -25,7 +26,7 @@ export interface Achievement {
   description: string;
   xp: number;
   icon: React.ComponentType<{ className?: string }>;
-  isUnlocked: (progress: UserProgress, completedTasksLog: CompletedTaskLog[]) => boolean;
+  isUnlocked: (progress: UserProgress, completedTasksLog: CompletedTaskLog[], routine?: RoutineTask[]) => boolean;
 }
 
 export interface UserState {

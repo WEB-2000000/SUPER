@@ -1,3 +1,4 @@
+
 'use client';
 
 import React from 'react';
@@ -35,7 +36,7 @@ const AchievementsList: React.FC<AchievementsListProps> = ({
       </CardHeader>
       <CardContent>
         <TooltipProvider>
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3">
+            <div className="grid grid-cols-4 sm:grid-cols-5 md:grid-cols-6 lg:grid-cols-8 xl:grid-cols-10 gap-2">
                 {achievements.map((ach) => {
                 const isUnlocked = unlockedAchievements.includes(ach.id);
                 const Icon = ach.icon;
@@ -43,15 +44,15 @@ const AchievementsList: React.FC<AchievementsListProps> = ({
                     <Tooltip key={ach.id} delayDuration={0}>
                     <TooltipTrigger asChild>
                         <div
-                        className={`relative flex items-center justify-center p-3 aspect-square rounded-lg border-2 transition-all duration-300
+                        className={`relative flex items-center justify-center p-2 aspect-square rounded-lg border-2 transition-all duration-300
                             ${
                             isUnlocked
                                 ? 'bg-accent/20 border-accent text-accent animate-in fade-in zoom-in-50'
                                 : 'bg-muted/30 border-muted/50 text-muted-foreground'
                             }`}
                         >
-                        <Icon className="w-8 h-8" />
-                        {!isUnlocked && <Lock className="w-3 h-3 absolute bottom-1 right-1 text-muted-foreground/50" />}
+                        <Icon className="w-6 h-6" />
+                        {!isUnlocked && <Lock className="w-2 h-2 absolute bottom-1 right-1 text-muted-foreground/50" />}
                         </div>
                     </TooltipTrigger>
                     <TooltipContent>
