@@ -17,19 +17,19 @@ const DailyMotivation: React.FC<DailyMotivationProps> = ({ dailyMotivation }) =>
       <CardHeader>
         <CardTitle className="font-headline text-xl flex items-center gap-2">
             <Sparkles className="text-accent"/>
-          <span>رسالتك التحفيزية اليومية</span>
+            <span>رسالتك اليومية</span>
         </CardTitle>
       </CardHeader>
       <CardContent>
         {dailyMotivation ? (
-          <blockquote className="border-r-4 border-primary pr-4 italic text-lg">
+          <blockquote className="border-r-4 border-accent pr-4 italic text-lg leading-relaxed">
             {dailyMotivation}
           </blockquote>
         ) : (
-          <div className="space-y-2">
+          <div className="space-y-3">
             <Skeleton className="h-4 w-full" />
             <Skeleton className="h-4 w-full" />
-            <Skeleton className="h-4 w-3/4" />
+            <Skeleton className="h-4 w-4/5" />
           </div>
         )}
       </CardContent>

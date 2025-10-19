@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useMemo } from 'react';
-import { Bar, BarChart, CartesianGrid, XAxis, YAxis, ResponsiveContainer, Tooltip } from 'recharts';
+import { Bar, BarChart, CartesianGrid, XAxis, YAxis, ResponsiveContainer, Tooltip, Legend } from 'recharts';
 import {
   Card,
   CardContent,
@@ -18,6 +18,7 @@ import {
 import type { CompletedTaskLog } from '@/lib/types';
 import { subDays, format, startOfWeek, endOfWeek, startOfMonth, endOfMonth, eachDayOfInterval } from 'date-fns';
 import { ar } from 'date-fns/locale';
+import { TrendingUp } from 'lucide-react';
 
 type ProgressChartsProps = {
   completedTasksLog: CompletedTaskLog[];
@@ -75,10 +76,13 @@ const categoryColors: Record<string, string> = {
 const CustomTooltip = ({ active, payload, label }: any) => {
     if (active && payload && payload.length) {
       return (
-        <div className="bg-background/80 backdrop-blur-sm p-2 border rounded-lg shadow-lg">
-          <p className="label font-bold">{`${label}`}</p>
+        <div className="bg-background/80 backdrop-blur-sm p-3 border rounded-lg shadow-lg">
+          <p className="label font-bold text-lg mb-2">{`${label}`}</p>
           {payload.map((pld: any) => (
-             <p key={pld.dataKey} style={{ color: pld.fill }} className="capitalize">{`${pld.dataKey}: ${pld.value}`}</p>
+             <div key={pld.dataKey} className="flex items-center gap-2">
+                <div className="w-3 h-3 rounded-sm" style={{ backgroundColor: pld.fill }} />
+                <p style={{ color: 'hsl(var(--foreground))' }} className="capitalize font-medium">{`${pld.dataKey}: ${pld.value}`}</p>
+             </div>
           ))}
         </div>
       );
@@ -89,14 +93,14 @@ const CustomTooltip = ({ active, payload, label }: any) => {
 
 const ProgressChart: React.FC<{ data: ChartData[], categories: string[] }> = ({ data, categories }) => {
     return (
-        <ResponsiveContainer width="100%" height={300}>
-            <BarChart data={data}>
-                <CartesianGrid strokeDasharray="3 3" vertical={false} />
+        <ResponsiveContainer width="100%" height={350}>
+            <BarChart data={data} margin={{ top: 20, right: 10, left: -10, bottom: 5 }}>
+                <CartesianGrid strokeDasharray="3 3" vertical={false} strokeOpacity={0.2} />
                 <XAxis dataKey="date" tick={{ fill: 'hsl(var(--muted-foreground))' }} tickLine={{ stroke: 'hsl(var(--border))' }} />
                 <YAxis allowDecimals={false} tick={{ fill: 'hsl(var(--muted-foreground))' }} tickLine={{ stroke: 'hsl(var(--border))' }}/>
-                <Tooltip content={<CustomTooltip />} cursor={{fill: 'hsl(var(--muted-foreground)/0.1)'}} />
+                <Tooltip content={<CustomTooltip />} cursor={{fill: 'hsl(var(--primary)/0.1)'}} />
                 {categories.map(cat => (
-                    <Bar key={cat} dataKey={cat} stackId="a" fill={categoryColors[cat] || 'hsl(var(--primary))'} radius={[4, 4, 0, 0]} />
+                    <Bar key={cat} dataKey={cat} stackId="a" fill={categoryColors[cat] || 'hsl(var(--primary))'} radius={[6, 6, 0, 0]} barSize={20} />
                 ))}
             </BarChart>
         </ResponsiveContainer>
@@ -118,30 +122,43 @@ const ProgressCharts: React.FC<ProgressChartsProps> = ({ completedTasksLog }) =>
     return processData(completedTasksLog, start, end, 'd');
   }, [completedTasksLog, now]);
   
-  const allCategories = useMemo(() => [...new Set(completedTasksLog.map(log => log.category))], [completedTasksLog]);
+  const allCategories = useMemo(() => [...new Set(Object.keys(categoryColors).filter(cat => completedTasksLog.some(log => log.category === cat)))], [completedTasksLog]);
 
 
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="font-headline text-xl">تتبع التقدم</CardTitle>
+        <CardTitle className="font-headline text-xl flex items-center gap-2">
+            <TrendingUp className="text-primary"/>
+            <span>تتبع التقدم</span>
+        </CardTitle>
         <CardDescription>
-          شاهد إنجازاتك بمرور الوقت.
+          شاهد إنجازاتك والمهام المكتملة بمرور الوقت.
         </CardDescription>
       </CardHeader>
       <CardContent>
-        <Tabs defaultValue="weekly" className="w-full">
-          <TabsList className="grid w-full grid-cols-2">
-            <TabsTrigger value="weekly">أسبوعي</TabsTrigger>
-            <TabsTrigger value="monthly">شهري</TabsTrigger>
-          </TabsList>
-          <TabsContent value="weekly">
-            <ProgressChart data={weeklyData} categories={allCategories} />
-          </TabsContent>
-          <TabsContent value="monthly">
-            <ProgressChart data={monthlyData} categories={allCategories} />
-          </TabsContent>
-        </Tabs>
+        {completedTasksLog.length > 0 ? (
+          <Tabs defaultValue="weekly" className="w-full">
+            <TabsList className="grid w-full grid-cols-2">
+              <TabsTrigger value="weekly">أسبوعي</TabsTrigger>
+              <TabsTrigger value="monthly">شهري</TabsTrigger>
+            </TabsList>
+            <TabsContent value="weekly">
+              <ProgressChart data={weeklyData} categories={allCategories} />
+            </TabsContent>
+            <TabsContent value="monthly">
+              <ProgressChart data={monthlyData} categories={allCategories} />
+            </TabsContent>
+          </Tabs>
+        ) : (
+          <div className="text-center py-12 px-4 border-2 border-dashed border-border rounded-xl">
+              <TrendingUp className="mx-auto h-12 w-12 text-muted-foreground" />
+              <h3 className="mt-4 text-xl font-bold">لا توجد بيانات حتى الآن</h3>
+              <p className="text-muted-foreground mt-2">
+                أكمل بعض المهام لتبدأ في رؤية تقدمك هنا.
+              </p>
+          </div>
+        )}
       </CardContent>
     </Card>
   );

@@ -6,6 +6,9 @@ import {
   Briefcase,
   Star,
   Zap,
+  Flame,
+  Sunrise,
+  Crown,
 } from 'lucide-react';
 import type { Achievement, CompletedTaskLog, UserProgress } from './types';
 
@@ -19,12 +22,15 @@ export const achievements: Achievement[] = [
     isUnlocked: (progress) => progress.totalTasksCompleted >= 1,
   },
   {
-    id: 'level_2',
-    name: 'ارتقاء!',
-    description: 'الوصول إلى المستوى 2.',
-    xp: 50,
-    icon: Trophy,
-    isUnlocked: (progress) => progress.level >= 2,
+    id: 'early_bird',
+    name: 'الطائر المبكر',
+    description: 'أكمل مهمة قبل الساعة 8 صباحًا.',
+    xp: 25,
+    icon: Sunrise,
+    isUnlocked: () => {
+        const now = new Date();
+        return now.getHours() < 8;
+    },
   },
   {
     id: 'level_5',
@@ -33,6 +39,14 @@ export const achievements: Achievement[] = [
     xp: 100,
     icon: Zap,
     isUnlocked: (progress) => progress.level >= 5,
+  },
+  {
+    id: 'level_10',
+    name: 'محترف',
+    description: 'الوصول إلى المستوى 10.',
+    xp: 200,
+    icon: Crown,
+    isUnlocked: (progress) => progress.level >= 10,
   },
   {
     id: 'work_novice',
@@ -59,19 +73,22 @@ export const achievements: Achievement[] = [
     isUnlocked: (progress) => (progress.categoryCounts['sport'] || 0) >= 5,
   },
   {
-    id: 'perfect_day',
-    name: 'يوم مثالي',
-    description: 'أكمل جميع المهام في يوم واحد.',
+    id: 'hot_streak',
+    name: 'سلسلة انتصارات',
+    description: 'أكمل مهمة كل يوم لمدة 3 أيام متتالية.',
     xp: 75,
-    icon: Star,
+    icon: Flame,
     isUnlocked: (_, completedTasksLog) => {
-      // This is a simplified check. A more robust implementation would need to know the total tasks for a given day.
-      // We'll check if a user has completed more than 5 tasks in a single day as a proxy.
-      const tasksPerDay: Record<string, number> = {};
-      completedTasksLog.forEach(log => {
-        tasksPerDay[log.date] = (tasksPerDay[log.date] || 0) + 1;
-      });
-      return Object.values(tasksPerDay).some(count => count >= 5);
+        const today = new Date();
+        const dates = new Set(completedTasksLog.map(log => log.date));
+        for (let i = 0; i < 3; i++) {
+            const d = new Date(today);
+            d.setDate(d.getDate() - i);
+            if (!dates.has(d.toISOString().split('T')[0])) {
+                return false;
+            }
+        }
+        return true;
     },
   },
 ];

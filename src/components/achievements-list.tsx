@@ -9,55 +9,57 @@ import {
   TooltipTrigger,
 } from '@/components/ui/tooltip';
 import { achievements } from '@/lib/achievements';
-import type { UserProgress, CompletedTaskLog } from '@/lib/types';
-import { Trophy } from 'lucide-react';
+import { Trophy, Lock } from 'lucide-react';
 
 type AchievementsListProps = {
   unlockedAchievements: string[];
-  progress: UserProgress;
-  completedTasksLog: CompletedTaskLog[];
 };
 
 const AchievementsList: React.FC<AchievementsListProps> = ({
   unlockedAchievements,
-  progress,
-  completedTasksLog,
 }) => {
+  const unlockedCount = unlockedAchievements.length;
+  const totalCount = achievements.length;
+
   return (
-    <Card>
+    <Card className="bg-gradient-to-br from-card to-secondary/30">
       <CardHeader>
-        <CardTitle className="font-headline text-xl flex items-center gap-2">
-            <Trophy className="text-accent" />
-          <span>الإنجازات</span>
+        <CardTitle className="font-headline text-xl flex items-center justify-between">
+            <div className="flex items-center gap-2">
+                <Trophy className="text-accent" />
+                <span>الإنجازات</span>
+            </div>
+            <span className="font-mono text-sm text-muted-foreground">{unlockedCount}/{totalCount}</span>
         </CardTitle>
       </CardHeader>
       <CardContent>
         <TooltipProvider>
-          <div className="grid grid-cols-4 sm:grid-cols-5 md:grid-cols-6 gap-4">
+          <div className="grid grid-cols-4 gap-3">
             {achievements.map((ach) => {
               const isUnlocked = unlockedAchievements.includes(ach.id);
               const Icon = ach.icon;
               return (
-                <Tooltip key={ach.id}>
+                <Tooltip key={ach.id} delayDuration={0}>
                   <TooltipTrigger asChild>
                     <div
-                      className={`flex items-center justify-center p-3 aspect-square rounded-full transition-all
+                      className={`relative flex items-center justify-center p-3 aspect-square rounded-lg border-2 transition-all duration-300
                         ${
                           isUnlocked
-                            ? 'bg-accent/20 text-accent border-2 border-accent'
-                            : 'bg-muted/50 text-muted-foreground'
+                            ? 'bg-accent/20 border-accent text-accent animate-in fade-in zoom-in-50'
+                            : 'bg-muted/30 border-muted/50 text-muted-foreground'
                         }`}
                     >
-                      <Icon className="w-8 h-8" />
+                      <Icon className="w-7 h-7" />
+                      {!isUnlocked && <Lock className="w-3 h-3 absolute bottom-1 right-1 text-muted-foreground/50" />}
                     </div>
                   </TooltipTrigger>
                   <TooltipContent>
-                    <p className="font-bold">{ach.name}</p>
-                    <p>{ach.description}</p>
+                    <p className="font-bold text-base">{ach.name}</p>
+                    <p className="text-sm text-muted-foreground">{ach.description}</p>
                     {isUnlocked ? (
-                      <p className="text-green-500">مفتوح (+{ach.xp} XP)</p>
+                      <p className="text-green-400 font-semibold mt-1">+ {ach.xp} XP</p>
                     ) : (
-                      <p className="text-muted-foreground">مغلق</p>
+                      <p className="text-red-400 font-semibold mt-1">مغلق</p>
                     )}
                   </TooltipContent>
                 </Tooltip>

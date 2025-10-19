@@ -14,6 +14,7 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
 import {
   Dialog,
   DialogContent,
@@ -21,17 +22,17 @@ import {
   DialogTitle,
   DialogDescription,
 } from '@/components/ui/dialog';
-import { Loader2, Sparkles } from 'lucide-react';
+import { Loader2, Sparkles, Rocket } from 'lucide-react';
 import type { User } from '@/lib/types';
 
 const formSchema = z.object({
-  name: z.string().min(2, { message: 'يجب أن يكون الاسم من حرفين على الأقل.' }),
+  name: z.string().min(2, { message: 'يجب أن يكون الاسم من حرفين على الأقل.' }).max(50, { message: 'يجب ألا يزيد الاسم عن 50 حرفًا.' }),
   age: z.coerce
     .number()
     .int()
     .min(10, { message: 'يجب أن يكون عمرك 10 سنوات على الأقل.' })
     .max(100, { message: 'يجب أن يكون عمرك 100 عام أو أقل.' }),
-  goal: z.string().min(10, { message: 'يجب أن يكون الهدف من 10 أحرف على الأقل.' }),
+  goal: z.string().min(10, { message: 'يجب أن يكون الهدف من 10 أحرف على الأقل.' }).max(200, { message: 'يجب ألا يزيد الهدف عن 200 حرف.' }),
 });
 
 type OnboardingFormProps = {
@@ -62,25 +63,26 @@ const OnboardingForm: React.FC<OnboardingFormProps> = ({
     setIsSubmitting(true);
     setUser(values);
     await generateRoutine();
-    // The dialog will close automatically when the `open` prop becomes false
-    // No need to setIsSubmitting(false) as the component will be unmounted or hidden
   };
 
   const isWorking = isSubmitting || isGeneratingRoutine;
 
   return (
     <Dialog open={open}>
-      <DialogContent className="sm:max-w-[425px]" onInteractOutside={(e) => e.preventDefault()}>
-        <DialogHeader>
-          <DialogTitle className="font-headline text-2xl text-primary">
+      <DialogContent className="sm:max-w-md" onInteractOutside={(e) => e.preventDefault()}>
+        <DialogHeader className="text-center items-center">
+            <div className="bg-primary/10 p-3 rounded-full mb-4">
+                <Rocket className="w-10 h-10 text-primary" />
+            </div>
+          <DialogTitle className="font-headline text-3xl text-primary">
             مرحباً بك في Super Charge
           </DialogTitle>
-          <DialogDescription>
-            لنقم بإعداد ملفك الشخصي. ستساعدنا هذه المعلومات في تخصيص تجربتك.
+          <DialogDescription className="text-base">
+            لنقم بإعداد ملفك الشخصي. ستساعدنا هذه المعلومات في تخصيص تجربتك وتحفيزك.
           </DialogDescription>
         </DialogHeader>
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 pt-4">
             <FormField
               control={form.control}
               name="name"
@@ -88,7 +90,7 @@ const OnboardingForm: React.FC<OnboardingFormProps> = ({
                 <FormItem>
                   <FormLabel>الاسم</FormLabel>
                   <FormControl>
-                    <Input placeholder="اسمك..." {...field} />
+                    <Input placeholder="أدخل اسمك..." {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -101,7 +103,7 @@ const OnboardingForm: React.FC<OnboardingFormProps> = ({
                 <FormItem>
                   <FormLabel>العمر</FormLabel>
                   <FormControl>
-                    <Input type="number" placeholder="عمرك..." {...field} />
+                    <Input type="number" placeholder="أدخل عمرك..." {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -114,19 +116,19 @@ const OnboardingForm: React.FC<OnboardingFormProps> = ({
                 <FormItem>
                   <FormLabel>ما هو هدفك الأساسي؟</FormLabel>
                   <FormControl>
-                    <Input placeholder="على سبيل المثال، تعلم لغة جديدة، الحصول على لياقة..." {...field} />
+                    <Textarea rows={3} placeholder="على سبيل المثال: تعلم البرمجة، ممارسة الرياضة يوميًا..." {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
-            <Button type="submit" className="w-full" disabled={isWorking}>
+            <Button type="submit" size="lg" className="w-full mt-4" disabled={isWorking}>
               {isWorking ? (
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                <Loader2 className="mr-2 h-5 w-5 animate-spin" />
               ) : (
-                <Sparkles className="mr-2 h-4 w-4" />
+                <Sparkles className="mr-2 h-5 w-5" />
               )}
-              {isSubmitting ? (isGeneratingRoutine ? 'جارٍ إنشاء خطتك...' : 'جارٍ الحفظ...') : 'ابدأ رحلتك'}
+              {isSubmitting ? (isGeneratingRoutine ? 'جاري إنشاء خطتك...' : 'جاري الحفظ...') : 'ابدأ رحلتك نحو النجاح'}
             </Button>
           </form>
         </Form>
