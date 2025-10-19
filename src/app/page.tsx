@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useMemo } from 'react';
@@ -26,9 +27,9 @@ import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 
 
 const Logo = () => (
-  <div className="bg-primary/10 p-4 rounded-full mb-6">
-    <Zap className="w-16 h-16 text-primary" />
-  </div>
+    <div className="bg-primary/10 p-4 rounded-full mb-6">
+        <Zap className="w-16 h-16 text-primary" />
+    </div>
 );
 
 export default function SuperChargePage() {
@@ -66,8 +67,8 @@ export default function SuperChargePage() {
         <SidebarProvider>
             <Sidebar side="right" variant='sidebar' collapsible="icon">
                 <SidebarHeader className="items-center text-center p-4 border-b">
-                    <Avatar className="size-24 mb-3 border-4 border-accent shadow-md">
-                        <AvatarFallback className="bg-primary/10 text-primary text-4xl font-bold">
+                    <Avatar className="mb-3 border-4 border-accent shadow-md transition-all duration-300 size-24 group-data-[collapsible=icon]:size-12">
+                        <AvatarFallback className="bg-primary/10 text-primary font-bold transition-all duration-300 text-4xl group-data-[collapsible=icon]:text-2xl">
                             {state.user.name.charAt(0)}
                         </AvatarFallback>
                     </Avatar>
