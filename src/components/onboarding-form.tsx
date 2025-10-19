@@ -22,7 +22,7 @@ import {
   DialogTitle,
   DialogDescription,
 } from '@/components/ui/dialog';
-import { Loader2, Sparkles, Rocket } from 'lucide-react';
+import { Loader2, Sparkles, Zap } from 'lucide-react';
 import type { User } from '@/lib/types';
 
 const formSchema = z.object({
@@ -72,7 +72,7 @@ const OnboardingForm: React.FC<OnboardingFormProps> = ({
       <DialogContent className="sm:max-w-md" onInteractOutside={(e) => e.preventDefault()}>
         <DialogHeader className="text-center items-center">
             <div className="bg-primary/10 p-3 rounded-full mb-4">
-                <Rocket className="w-10 h-10 text-primary" />
+                <Zap className="w-10 h-10 text-primary" />
             </div>
           <DialogTitle className="font-headline text-3xl text-primary">
             مرحباً بك في Super Charge

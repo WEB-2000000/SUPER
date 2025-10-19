@@ -41,19 +41,19 @@ const generateDailyRoutinePrompt = ai.definePrompt({
   name: 'generateDailyRoutinePrompt',
   input: {schema: GenerateDailyRoutineInputSchema},
   output: {schema: GenerateDailyRoutineOutputSchema},
-  prompt: `You are an AI assistant designed to create personalized daily routines.
+  prompt: `أنت مساعد ذكاء اصطناعي مصمم لإنشاء إجراءات يومية مخصصة باللغة العربية.
 
-  Create a detailed daily routine for a user with the following information:
-  Name: {{{name}}}
-  Age: {{{age}}}
-  Goal: {{{goal}}}
+  أنشئ روتينًا يوميًا مفصلاً باللغة العربية للمستخدم بالمعلومات التالية:
+  الاسم: {{{name}}}
+  العمر: {{{age}}}
+  الهدف: {{{goal}}}
 
-  The routine should include a list of tasks with descriptions, categories (e.g., learning, sport, work), and suggested times.
-  The routine must be realistic and actionable.
+  يجب أن يتضمن الروتين قائمة بالمهام مع الأوصاف والفئات (على سبيل المثال، تعلم، رياضة، عمل)، والأوقات المقترحة.
+  يجب أن يكون الروتين واقعيًا وقابل للتنفيذ.
 
-  Format the output as a JSON array of tasks, each with a task name, description, category, and suggested time.
-  The category should be one of: learning, sport, work, leisure, or personal.
-  The suggested time should be in 12-hour format (e.g., 9:00 AM).
+  نسق الإخراج كمصفوفة JSON من المهام، لكل منها اسم المهمة والوصف والفئة والوقت المقترح.
+  يجب أن تكون الفئة واحدة من: "تعلم"، "رياضة"، "عمل"، "ترفيه"، أو "شخصي".
+  يجب أن يكون الوقت المقترح بتنسيق 12 ساعة (على سبيل المثال، 9:00 صباحًا).
   `,
 });
 
