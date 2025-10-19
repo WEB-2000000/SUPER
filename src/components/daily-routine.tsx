@@ -20,7 +20,6 @@ import {
   Loader2,
   Sparkles,
   ListTodo,
-  ChevronDown,
 } from 'lucide-react';
 import { Badge } from './ui/badge';
 import {
@@ -47,7 +46,7 @@ const categoryIcons: Record<string, React.ComponentType<{ className?: string }>>
   personal: UserIcon,
 };
 
-const TaskItem: React.FC<{ task: RoutineTask; onComplete: (id: string) => void, today: string }> = ({
+const TaskItem: React.FC<{ task: RoutineTask; onComplete: (id: string) => void, today: string }> = React.memo(({
   task,
   onComplete,
   today,
@@ -58,7 +57,7 @@ const TaskItem: React.FC<{ task: RoutineTask; onComplete: (id: string) => void, 
   return (
     <AccordionItem value={task.id} className="border-b-0 mb-2">
       <div className={cn(
-        "flex items-center gap-4 p-4 rounded-lg transition-all duration-300",
+        "flex items-center gap-4 p-4 rounded-lg transition-all duration-300 border",
         isCompletedToday ? 'bg-primary/10 border-primary/20' : 'bg-card border-border hover:border-primary/50'
       )}>
         <Checkbox
@@ -72,7 +71,7 @@ const TaskItem: React.FC<{ task: RoutineTask; onComplete: (id: string) => void, 
           <label
             htmlFor={task.id}
             className={cn(
-              "font-bold text-lg leading-none transition-colors",
+              "font-bold text-lg leading-none transition-colors cursor-pointer",
               isCompletedToday ? 'line-through text-muted-foreground' : 'text-foreground'
             )}
           >
@@ -93,7 +92,9 @@ const TaskItem: React.FC<{ task: RoutineTask; onComplete: (id: string) => void, 
       </AccordionContent>
     </AccordionItem>
   );
-};
+});
+
+TaskItem.displayName = 'TaskItem';
 
 
 const DailyRoutine: React.FC<DailyRoutineProps> = ({

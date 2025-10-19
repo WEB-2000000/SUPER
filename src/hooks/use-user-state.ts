@@ -63,26 +63,30 @@ export function useUserState() {
         if (parsedState.lastRoutineResetDate !== today) {
             resetRoutine(today);
         }
+      } else {
+        setLoading(false);
       }
     } catch (error) {
       console.error('Failed to load state from localStorage', error);
       localStorage.removeItem('supercharge_state');
-    } finally {
       setLoading(false);
+    } finally {
+        // This was changed from setLoading(false) to handle cases where state is loaded
     }
   }, []);
 
-  const updateState = (updater: (prevState: UserState) => UserState) => {
-    setState(prevState => {
-      const newState = updater(prevState);
-      try {
-        localStorage.setItem('supercharge_state', JSON.stringify(newState));
-      } catch (error) {
-        console.error("Failed to save state to localStorage", error);
+  useEffect(() => {
+    if (!loading) {
+      localStorage.setItem('supercharge_state', JSON.stringify(state));
+    }
+  }, [state, loading]);
+  
+  useEffect(() => {
+      if(state.user) {
+          setLoading(false);
       }
-      return newState;
-    });
-  };
+  }, [state.user])
+
 
   const fetchDailyMotivation = async (user: User, today: string) => {
     try {
@@ -91,7 +95,7 @@ export function useUserState() {
         userAge: user.age,
         userGoal: user.goal,
       });
-      updateState(s => ({
+      setState(s => ({
         ...s,
         dailyMotivation: result.motivationalMessage,
         lastMotivationDate: today,
@@ -101,21 +105,29 @@ export function useUserState() {
     }
   };
 
-  const setUser = (user: User) => {
+  const setUser = useCallback((user: User) => {
     const today = new Date().toISOString().split('T')[0];
-    updateState(s => ({ ...getInitialState(), user, lastRoutineResetDate: today }));
-    fetchDailyMotivation(user, today);
-  };
+    setState(s => {
+      const newState = { ...getInitialState(), user, lastRoutineResetDate: today };
+      if (s.dailyMotivation && s.lastMotivationDate === today) {
+          newState.dailyMotivation = s.dailyMotivation;
+          newState.lastMotivationDate = s.lastMotivationDate;
+      } else {
+          fetchDailyMotivation(user, today);
+      }
+      return newState;
+    });
+  }, []);
   
   const resetRoutine = (today: string) => {
-    updateState(s => ({
+    setState(s => ({
         ...s,
         routine: s.routine.map(task => ({ ...task, completed: false, completedDate: undefined })),
         lastRoutineResetDate: today
     }));
   };
 
-  const generateRoutine = async () => {
+  const generateRoutine = useCallback(async () => {
     if (!state.user) return;
     setIsGeneratingRoutine(true);
     try {
@@ -129,7 +141,7 @@ export function useUserState() {
         id: uuidv4(),
         completed: false,
       }));
-      updateState(s => ({ ...s, routine: newRoutine }));
+      setState(s => ({ ...s, routine: newRoutine }));
       setToastsToShow(toasts => [...toasts, {
         title: "تم إنشاء خطتك!",
         description: "تم إنشاء خطتك اليومية الجديدة بنجاح.",
@@ -144,13 +156,13 @@ export function useUserState() {
     } finally {
       setIsGeneratingRoutine(false);
     }
-  };
+  }, [state.user]);
 
-  const completeTask = (taskId: string) => {
+  const completeTask = useCallback((taskId: string) => {
     let completedTask: RoutineTask | undefined;
     const newToasts: any[] = [];
 
-    updateState(s => {
+    setState(s => {
       const newRoutine = s.routine.map(task => {
         if (task.id === taskId && !task.completed) {
           completedTask = { ...task, completed: true, completedDate: new Date().toISOString().split('T')[0] };
@@ -196,7 +208,6 @@ export function useUserState() {
         categoryCounts: newCategoryCounts,
       };
 
-      // Check for new achievements
       const newlyUnlocked: string[] = [];
       let achievementXp = 0;
       achievements.forEach(ach => {
@@ -211,7 +222,6 @@ export function useUserState() {
       });
       
       newProgress.xp += achievementXp;
-      // Re-check for level up after achievement XP
       xpForNextLevel = getXPForNextLevel(newProgress.level);
       while (newProgress.xp >= xpForNextLevel) {
           newProgress.xp -= xpForNextLevel;
@@ -235,21 +245,21 @@ export function useUserState() {
         completedTasksLog: newCompletedTasksLog,
       };
     });
-  };
+  }, []);
 
   const resetState = () => {
     localStorage.removeItem('supercharge_state');
     setState(getInitialState());
+    setLoading(false);
     setToastsToShow(toasts => [...toasts, {
         title: "تم البدء من جديد!",
         description: "تمت إعادة ضبط تقدمك. رحلة جديدة تبدأ الآن!",
     }]);
   };
 
-  // Need to add this to fix uuid not being available on server.
   useEffect(() => {
     if (!loading && state.routine.some(task => !task.id)) {
-        updateState(s => ({
+        setState(s => ({
             ...s,
             routine: s.routine.map(task => ({ ...task, id: task.id || uuidv4() }))
         }));
