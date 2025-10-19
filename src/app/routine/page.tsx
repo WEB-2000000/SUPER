@@ -18,7 +18,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
-import { Trash2, Settings, Home, TrendingUp, ListTodo } from 'lucide-react';
+import { Trash2, Settings, Home, TrendingUp, ListTodo, Zap } from 'lucide-react';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import Link from 'next/link';
 
@@ -37,8 +37,11 @@ export default function RoutinePage() {
   if (loading || !state.user) {
     return (
       <div className="flex flex-col items-center justify-center min-h-screen bg-background p-4">
+        <div className="bg-primary/10 p-4 rounded-full mb-6">
+            <Zap className="w-16 h-16 text-primary" />
+        </div>
         <h1 className="text-4xl font-headline font-black text-primary tracking-wider uppercase">Super Charge</h1>
-        <p className="text-muted-foreground mt-2">جاري التحميل...</p>
+        <p className="text-muted-foreground mt-2">جاري تحميل رحلتك الملحمية...</p>
       </div>
     );
   }
