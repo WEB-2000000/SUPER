@@ -235,6 +235,7 @@ export function useUserState() {
   const resetState = () => {
     localStorage.removeItem('supercharge_state');
     setState(getInitialState());
+    setLoading(false); // Make sure loading is set to false
     setToastsToShow(toasts => [...toasts, {
         title: "تم البدء من جديد!",
         description: "تمت إعادة ضبط تقدمك. رحلة جديدة تبدأ الآن!",
