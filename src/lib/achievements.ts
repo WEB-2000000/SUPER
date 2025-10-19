@@ -68,6 +68,7 @@ export const achievements: Achievement[] = [
     name: 'الخطوة الأولى',
     description: 'أكمل مهمتك الأولى!',
     xp: 20,
+    tier: 'bronze',
     icon: Award,
     isUnlocked: (progress) => progress.totalTasksCompleted >= 1,
   },
@@ -76,6 +77,7 @@ export const achievements: Achievement[] = [
     name: 'خمسة مهام',
     description: 'أكمل 5 مهام.',
     xp: 50,
+    tier: 'bronze',
     icon: Star,
     isUnlocked: (progress) => progress.totalTasksCompleted >= 5,
   },
@@ -84,6 +86,7 @@ export const achievements: Achievement[] = [
     name: 'عشرة مهام',
     description: 'أكمل 10 مهام.',
     xp: 100,
+    tier: 'silver',
     icon: Trophy,
     isUnlocked: (progress) => progress.totalTasksCompleted >= 10,
   },
@@ -92,6 +95,7 @@ export const achievements: Achievement[] = [
     name: 'لا يمكن إيقافه',
     description: 'أكمل 25 مهمة.',
     xp: 150,
+    tier: 'silver',
     icon: Rocket,
     isUnlocked: (progress) => progress.totalTasksCompleted >= 25,
   },
@@ -100,6 +104,7 @@ export const achievements: Achievement[] = [
     name: 'محقق الأهداف',
     description: 'أكمل 50 مهمة.',
     xp: 200,
+    tier: 'gold',
     icon: Target,
     isUnlocked: (progress) => progress.totalTasksCompleted >= 50,
   },
@@ -108,6 +113,7 @@ export const achievements: Achievement[] = [
     name: 'المئوي',
     description: 'أكمل 100 مهمة.',
     xp: 500,
+    tier: 'gold',
     icon: Shield,
     isUnlocked: (progress) => progress.totalTasksCompleted >= 100,
   },
@@ -118,6 +124,7 @@ export const achievements: Achievement[] = [
     name: 'لا يمكن إيقافك',
     description: 'الوصول إلى المستوى 5.',
     xp: 100,
+    tier: 'bronze',
     icon: Zap,
     isUnlocked: (progress) => progress.level >= 5,
   },
@@ -126,6 +133,7 @@ export const achievements: Achievement[] = [
     name: 'محترف',
     description: 'الوصول إلى المستوى 10.',
     xp: 200,
+    tier: 'silver',
     icon: Crown,
     isUnlocked: (progress) => progress.level >= 10,
   },
@@ -134,6 +142,7 @@ export const achievements: Achievement[] = [
     name: 'خبير',
     description: 'الوصول إلى المستوى 15.',
     xp: 300,
+    tier: 'gold',
     icon: Medal,
     isUnlocked: (progress) => progress.level >= 15,
   },
@@ -142,6 +151,7 @@ export const achievements: Achievement[] = [
     name: 'أسطورة',
     description: 'الوصول إلى المستوى 20.',
     xp: 500,
+    tier: 'platinum',
     icon: Gem,
     isUnlocked: (progress) => progress.level >= 20,
   },
@@ -152,6 +162,7 @@ export const achievements: Achievement[] = [
     name: 'سلسلة انتصارات (3 أيام)',
     description: 'أكمل مهمة كل يوم لمدة 3 أيام متتالية.',
     xp: 75,
+    tier: 'silver',
     icon: Flame,
     isUnlocked: (_, logs) => hasConsecutiveDays(logs, 3),
   },
@@ -160,6 +171,7 @@ export const achievements: Achievement[] = [
     name: 'محارب الأسبوع',
     description: 'أكمل مهمة كل يوم لمدة 7 أيام متتالية.',
     xp: 200,
+    tier: 'gold',
     icon: CalendarDays,
     isUnlocked: (_, logs) => hasConsecutiveDays(logs, 7),
   },
@@ -170,6 +182,7 @@ export const achievements: Achievement[] = [
     name: 'الطائر المبكر',
     description: 'أكمل مهمة قبل الساعة 8 صباحًا.',
     xp: 25,
+    tier: 'bronze',
     icon: Sunrise,
     isUnlocked: (_, logs) => {
         const now = new Date();
@@ -183,6 +196,7 @@ export const achievements: Achievement[] = [
     name: 'بطل استراحة الغداء',
     description: 'أكمل مهمة بين 12 مساءً و 2 مساءً.',
     xp: 25,
+    tier: 'bronze',
     icon: Sandwich,
     isUnlocked: (_, logs) => {
         const now = new Date();
@@ -196,6 +210,7 @@ export const achievements: Achievement[] = [
     name: 'بومة الليل',
     description: 'أكمل مهمة بعد الساعة 10 مساءً.',
     xp: 25,
+    tier: 'bronze',
     icon: Moon,
     isUnlocked: (_, logs) => {
         const now = new Date();
@@ -211,6 +226,7 @@ export const achievements: Achievement[] = [
     name: 'عامل مجتهد',
     description: 'أكمل 5 مهام عمل.',
     xp: 30,
+    tier: 'bronze',
     icon: Briefcase,
     isUnlocked: (progress) => (progress.categoryCounts['work'] || 0) >= 5,
   },
@@ -219,6 +235,7 @@ export const achievements: Achievement[] = [
     name: 'خبير عمل',
     description: 'أكمل 15 مهمة عمل.',
     xp: 150,
+    tier: 'silver',
     icon: NotebookText,
     isUnlocked: (progress) => (progress.categoryCounts['work'] || 0) >= 15,
   },
@@ -227,6 +244,7 @@ export const achievements: Achievement[] = [
     name: 'طالب علم',
     description: 'أكمل 5 مهام تعليمية.',
     xp: 30,
+    tier: 'bronze',
     icon: BrainCircuit,
     isUnlocked: (progress) => (progress.categoryCounts['learning'] || 0) >= 5,
   },
@@ -235,6 +253,7 @@ export const achievements: Achievement[] = [
     name: 'باحث نهم',
     description: 'أكمل 15 مهمة تعليمية.',
     xp: 150,
+    tier: 'silver',
     icon: BookOpen,
     isUnlocked: (progress) => (progress.categoryCounts['learning'] || 0) >= 15,
   },
@@ -243,6 +262,7 @@ export const achievements: Achievement[] = [
     name: 'رياضي نشيط',
     description: 'أكمل 5 مهام رياضية.',
     xp: 30,
+    tier: 'bronze',
     icon: Bike,
     isUnlocked: (progress) => (progress.categoryCounts['sport'] || 0) >= 5,
   },
@@ -251,6 +271,7 @@ export const achievements: Achievement[] = [
     name: 'بطل رياضي',
     description: 'أكمل 15 مهمة رياضية.',
     xp: 150,
+    tier: 'silver',
     icon: Dumbbell,
     isUnlocked: (progress) => (progress.categoryCounts['sport'] || 0) >= 15,
   },
@@ -259,6 +280,7 @@ export const achievements: Achievement[] = [
     name: 'نمو شخصي',
     description: 'أكمل 5 مهام شخصية.',
     xp: 30,
+    tier: 'bronze',
     icon: UserIcon,
     isUnlocked: (progress) => (progress.categoryCounts['personal'] || 0) >= 5,
   },
@@ -267,6 +289,7 @@ export const achievements: Achievement[] = [
     name: 'محسن الذات',
     description: 'أكمل 15 مهمة شخصية.',
     xp: 150,
+    tier: 'silver',
     icon: Activity,
     isUnlocked: (progress) => (progress.categoryCounts['personal'] || 0) >= 15,
   },
@@ -275,6 +298,7 @@ export const achievements: Achievement[] = [
     name: 'وقت مستقطع',
     description: 'أكمل 5 مهام ترفيهية.',
     xp: 30,
+    tier: 'bronze',
     icon: Coffee,
     isUnlocked: (progress) => (progress.categoryCounts['leisure'] || 0) >= 5,
   },
@@ -283,6 +307,7 @@ export const achievements: Achievement[] = [
     name: 'خبير الاسترخاء',
     description: 'أكمل 15 مهمة ترفيهية.',
     xp: 150,
+    tier: 'silver',
     icon: PartyPopper,
     isUnlocked: (progress) => (progress.categoryCounts['leisure'] || 0) >= 15,
   },
@@ -293,6 +318,7 @@ export const achievements: Achievement[] = [
     name: 'متعدد المواهب',
     description: 'أكمل مهمة واحدة على الأقل من 3 فئات مختلفة.',
     xp: 50,
+    tier: 'silver',
     icon: Layers3,
     isUnlocked: (progress) => Object.keys(progress.categoryCounts).length >= 3,
   },
@@ -301,6 +327,7 @@ export const achievements: Achievement[] = [
     name: 'سيد الجميع',
     description: 'أكمل مهمة واحدة على الأقل من كل الفئات الخمس.',
     xp: 150,
+    tier: 'gold',
     icon: Layers3,
     isUnlocked: (progress) => Object.keys(progress.categoryCounts).length >= 5,
   },
@@ -309,15 +336,13 @@ export const achievements: Achievement[] = [
     name: 'يوم مثالي',
     description: 'أكمل جميع مهامك في يوم واحد.',
     xp: 100,
+    tier: 'silver',
     icon: Sun,
-    isUnlocked: (progress, logs) => {
-        // This logic assumes `progress.routine` is available, which it isn't.
-        // A better approach is to pass the routine to the function or check if all tasks for a day are completed.
-        // This is a placeholder as we don't have the full state here.
-        // Let's check if user completed at least 5 tasks in a single day
+    isUnlocked: (progress, logs, routine) => {
+        if (!routine || routine.length === 0) return false;
         const today = new Date().toISOString().split('T')[0];
-        const todayLogs = logs.filter(log => log.date === today);
-        return todayLogs.length >= 5;
+        const todaysCompletedTasks = new Set(logs.filter(l => l.date === today).map(l => l.taskId));
+        return routine.every(task => todaysCompletedTasks.has(task.id));
     }
   },
   {
@@ -325,6 +350,7 @@ export const achievements: Achievement[] = [
     name: 'بداية جديدة',
     description: 'أنشئ خطتك الأولى.',
     xp: 10,
+    tier: 'bronze',
     icon: NotebookText,
     isUnlocked: (progress, logs, routine) => (routine?.length ?? 0) > 0,
   },
@@ -333,6 +359,7 @@ export const achievements: Achievement[] = [
     name: 'محارب نهاية الأسبوع',
     description: 'أكمل مهمة في يوم سبت أو أحد.',
     xp: 25,
+    tier: 'bronze',
     icon: CalendarDays,
     isUnlocked: (_, logs) => {
         const latestLog = logs[logs.length-1];
@@ -342,3 +369,5 @@ export const achievements: Achievement[] = [
     },
   },
 ];
+
+    

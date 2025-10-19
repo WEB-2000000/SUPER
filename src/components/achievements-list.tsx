@@ -11,11 +11,20 @@ import {
 } from '@/components/ui/tooltip';
 import { achievements } from '@/lib/achievements';
 import { Trophy, Lock } from 'lucide-react';
-import { ScrollArea } from '@/components/ui/scroll-area';
+import { cn } from '@/lib/utils';
+import type { AchievementTier } from '@/lib/types';
 
 type AchievementsListProps = {
   unlockedAchievements: string[];
 };
+
+const tierStyles: Record<AchievementTier, string> = {
+    bronze: 'border-[#cd7f32]/80 bg-[#cd7f32]/20 text-[#cd7f32]',
+    silver: 'border-[#c0c0c0]/80 bg-[#c0c0c0]/20 text-[#c0c0c0]',
+    gold: 'border-yellow-500/80 bg-yellow-500/20 text-yellow-500',
+    platinum: 'border-sky-400/80 bg-sky-400/20 text-sky-400',
+};
+
 
 const AchievementsList: React.FC<AchievementsListProps> = ({
   unlockedAchievements,
@@ -36,30 +45,31 @@ const AchievementsList: React.FC<AchievementsListProps> = ({
       </CardHeader>
       <CardContent>
         <TooltipProvider>
-            <div className="grid grid-cols-4 sm:grid-cols-5 md:grid-cols-6 lg:grid-cols-8 xl:grid-cols-10 gap-2">
+            <div className="grid grid-cols-5 sm:grid-cols-6 md:grid-cols-8 lg:grid-cols-10 xl:grid-cols-12 gap-2">
                 {achievements.map((ach) => {
                 const isUnlocked = unlockedAchievements.includes(ach.id);
                 const Icon = ach.icon;
+                const tierStyle = tierStyles[ach.tier] || tierStyles.bronze;
+
                 return (
                     <Tooltip key={ach.id} delayDuration={0}>
                     <TooltipTrigger asChild>
                         <div
-                        className={`relative flex items-center justify-center p-2 aspect-square rounded-lg border-2 transition-all duration-300
-                            ${
+                        className={cn(`relative flex items-center justify-center p-2 aspect-square rounded-lg border-2 transition-all duration-300`,
                             isUnlocked
-                                ? 'bg-accent/20 border-accent text-accent animate-in fade-in zoom-in-50'
+                                ? `${tierStyle} animate-in fade-in zoom-in-50`
                                 : 'bg-muted/30 border-muted/50 text-muted-foreground'
-                            }`}
+                            )}
                         >
                         <Icon className="w-6 h-6" />
                         {!isUnlocked && <Lock className="w-2 h-2 absolute bottom-1 right-1 text-muted-foreground/50" />}
                         </div>
                     </TooltipTrigger>
-                    <TooltipContent>
+                    <TooltipContent className={cn("border-2", isUnlocked ? tierStyle.split(' ')[0] : 'border-border')}>
                         <p className="font-bold text-base">{ach.name}</p>
                         <p className="text-sm text-muted-foreground">{ach.description}</p>
                         {isUnlocked ? (
-                        <p className="text-green-400 font-semibold mt-1">+ {ach.xp} XP</p>
+                        <p className={cn("font-semibold mt-1", tierStyle.split(' ')[2])}>+ {ach.xp} XP</p>
                         ) : (
                         <p className="text-red-400 font-semibold mt-1">مغلق</p>
                         )}
@@ -75,3 +85,5 @@ const AchievementsList: React.FC<AchievementsListProps> = ({
 };
 
 export default AchievementsList;
+
+    

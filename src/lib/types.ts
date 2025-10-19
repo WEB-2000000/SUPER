@@ -20,11 +20,14 @@ export interface RoutineTask extends Task {
   completedDate?: string;
 }
 
+export type AchievementTier = 'bronze' | 'silver' | 'gold' | 'platinum';
+
 export interface Achievement {
   id: string;
   name: string;
   description: string;
   xp: number;
+  tier: AchievementTier;
   icon: React.ComponentType<{ className?: string }>;
   isUnlocked: (progress: UserProgress, completedTasksLog: CompletedTaskLog[], routine?: RoutineTask[]) => boolean;
 }
@@ -52,3 +55,5 @@ export interface CompletedTaskLog {
   date: string; // YYYY-MM-DD
   category: string;
 }
+
+    
