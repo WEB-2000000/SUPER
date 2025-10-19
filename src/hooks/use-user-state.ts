@@ -31,6 +31,14 @@ export function useUserState() {
   const [loading, setLoading] = useState(true);
   const [isGeneratingRoutine, setIsGeneratingRoutine] = useState(false);
   const { toast } = useToast();
+  const [toastsToShow, setToastsToShow] = useState<any[]>([]);
+
+  useEffect(() => {
+    if (toastsToShow.length > 0) {
+      toastsToShow.forEach(t => toast(t));
+      setToastsToShow([]);
+    }
+  }, [toastsToShow, toast]);
 
   useEffect(() => {
     try {
@@ -117,17 +125,17 @@ export function useUserState() {
         completed: false,
       }));
       updateState(s => ({ ...s, routine: newRoutine }));
-      toast({
+      setToastsToShow(toasts => [...toasts, {
         title: "تم إنشاء خطتك!",
         description: "تم إنشاء خطتك اليومية الجديدة بنجاح.",
-      });
+      }]);
     } catch (error) {
       console.error('Failed to generate routine', error);
-      toast({
+      setToastsToShow(toasts => [...toasts, {
         title: "خطأ",
         description: "حدث خطأ أثناء إنشاء خطتك. الرجاء المحاولة مرة أخرى.",
         variant: "destructive",
-      });
+      }]);
     } finally {
       setIsGeneratingRoutine(false);
     }
@@ -135,6 +143,7 @@ export function useUserState() {
 
   const completeTask = (taskId: string) => {
     let completedTask: RoutineTask | undefined;
+    const newToasts: any[] = [];
 
     updateState(s => {
       const newRoutine = s.routine.map(task => {
@@ -164,12 +173,12 @@ export function useUserState() {
       }
 
       if (leveledUp) {
-        toast({
+        newToasts.push({
             title: `🎉 وصلت إلى المستوى ${newLevel}!`,
             description: `رائع! استمر في التقدم.`,
         });
       } else {
-        toast({
+        newToasts.push({
             title: `+${XP_PER_TASK} XP!`,
             description: `"${completedTask.task}" مكتمل. عمل رائع!`,
         });
@@ -189,7 +198,7 @@ export function useUserState() {
         if (!s.unlockedAchievements.includes(ach.id) && ach.isUnlocked(newProgress, newCompletedTasksLog)) {
           newlyUnlocked.push(ach.id);
           achievementXp += ach.xp;
-          toast({
+          newToasts.push({
             title: `🏆 تم فتح إنجاز!`,
             description: `${ach.name} (+${ach.xp} XP)`,
           });
@@ -202,11 +211,15 @@ export function useUserState() {
       while (newProgress.xp >= xpForNextLevel) {
           newProgress.xp -= xpForNextLevel;
           newProgress.level++;
-          toast({
+          newToasts.push({
               title: `🎉 وصلت إلى المستوى ${newProgress.level}!`,
               description: `مكافأة الإنجاز دفعتك للأعلى!`,
           });
           xpForNextLevel = getXPForNextLevel(newProgress.level);
+      }
+      
+      if (newToasts.length > 0) {
+        setToastsToShow(currentToasts => [...currentToasts, ...newToasts]);
       }
       
       return {
@@ -222,10 +235,10 @@ export function useUserState() {
   const resetState = () => {
     localStorage.removeItem('supercharge_state');
     setState(getInitialState());
-    toast({
+    setToastsToShow(toasts => [...toasts, {
         title: "تم البدء من جديد!",
         description: "تمت إعادة ضبط تقدمك. رحلة جديدة تبدأ الآن!",
-    });
+    }]);
   };
 
   // Need to add this to fix uuid not being available on server.
