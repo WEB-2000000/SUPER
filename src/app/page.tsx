@@ -20,14 +20,14 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
 import { Button } from '@/components/ui/button';
-import { Trash2, Settings, User as UserIcon, Palette } from 'lucide-react';
+import { Trash2, Settings, User as UserIcon, Zap } from 'lucide-react';
 import { SidebarProvider, Sidebar, SidebarTrigger, SidebarContent, SidebarHeader, SidebarInset, SidebarFooter, SidebarMenu, SidebarMenuItem, SidebarMenuButton } from '@/components/ui/sidebar';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 
 
 const Logo = () => (
   <div className="bg-primary/10 p-4 rounded-full mb-6">
-    <Palette className="w-16 h-16 text-primary" />
+    <Zap className="w-16 h-16 text-primary" />
   </div>
 );
 
