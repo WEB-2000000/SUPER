@@ -219,6 +219,15 @@ export function useUserState() {
     });
   };
 
+  const resetState = () => {
+    localStorage.removeItem('supercharge_state');
+    setState(getInitialState());
+    toast({
+        title: "تم البدء من جديد!",
+        description: "تمت إعادة ضبط تقدمك. رحلة جديدة تبدأ الآن!",
+    });
+  };
+
   // Need to add this to fix uuid not being available on server.
   useEffect(() => {
     if (!loading && state.routine.some(task => !task.id)) {
@@ -237,5 +246,6 @@ export function useUserState() {
     generateRoutine,
     completeTask,
     isGeneratingRoutine,
+    resetState,
   };
 }

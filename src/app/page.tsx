@@ -9,6 +9,19 @@ import DailyRoutine from '@/components/daily-routine';
 import ProgressCharts from '@/components/progress-charts';
 import AchievementsList from '@/components/achievements-list';
 import { Skeleton } from '@/components/ui/skeleton';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog"
+import { Button } from '@/components/ui/button';
+import { Trash2 } from 'lucide-react';
 
 const Logo = () => (
     <svg
@@ -30,6 +43,7 @@ export default function SuperChargePage() {
     generateRoutine,
     completeTask,
     isGeneratingRoutine,
+    resetState,
   } = useUserState();
 
   const today = useMemo(() => new Date().toISOString().split('T')[0], []);
@@ -59,9 +73,33 @@ export default function SuperChargePage() {
               <h1 className="text-2xl font-headline font-black text-primary tracking-wider uppercase">
                 Super Charge
               </h1>
-              <p className="text-lg font-medium text-foreground">
-                مرحباً <span className="font-bold text-primary">{state.user.name}</span>!
-              </p>
+              <div className="flex items-center gap-4">
+                <p className="text-lg font-medium text-foreground">
+                  مرحباً <span className="font-bold text-primary">{state.user.name}</span>!
+                </p>
+                <AlertDialog>
+                  <AlertDialogTrigger asChild>
+                    <Button variant="destructive" size="icon">
+                      <Trash2 className="h-5 w-5" />
+                      <span className="sr-only">البدء من جديد</span>
+                    </Button>
+                  </AlertDialogTrigger>
+                  <AlertDialogContent>
+                    <AlertDialogHeader>
+                      <AlertDialogTitle>هل أنت متأكد تمامًا؟</AlertDialogTitle>
+                      <AlertDialogDescription>
+                        سيؤدي هذا الإجراء إلى حذف جميع بياناتك وتقدمك بشكل دائم. لا يمكن التراجع عن هذا الإجراء.
+                      </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                      <AlertDialogCancel>إلغاء</AlertDialogCancel>
+                      <AlertDialogAction onClick={resetState}>
+                        نعم، ابدأ من جديد
+                      </AlertDialogAction>
+                    </AlertDialogFooter>
+                  </AlertDialogContent>
+                </AlertDialog>
+              </div>
             </div>
           </header>
           
