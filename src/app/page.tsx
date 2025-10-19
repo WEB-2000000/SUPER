@@ -1,7 +1,6 @@
 'use client';
 
 import React, { useMemo } from 'react';
-import { Palette } from 'lucide-react';
 import { useUserState } from '@/hooks/use-user-state';
 import OnboardingForm from '@/components/onboarding-form';
 import GamificationSummary from '@/components/gamification-summary';
@@ -10,6 +9,33 @@ import DailyRoutine from '@/components/daily-routine';
 import ProgressCharts from '@/components/progress-charts';
 import AchievementsList from '@/components/achievements-list';
 import { Skeleton } from '@/components/ui/skeleton';
+
+const Logo = () => (
+    <svg
+      className="w-16 h-16 animate-pulse mb-4"
+      viewBox="0 0 100 100"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <defs>
+        <linearGradient id="blue-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" style={{ stopColor: 'hsl(205, 100%, 50%)' }} />
+          <stop offset="100%" style={{ stopColor: 'hsl(221, 83%, 43%)' }} />
+        </linearGradient>
+      </defs>
+      <circle
+        cx="50"
+        cy="50"
+        r="40"
+        stroke="url(#blue-gradient)"
+        strokeWidth="10"
+        fill="none"
+      />
+      <path
+        d="M58 35 L42 50 L52 50 L42 65 L68 45 L52 45 Z"
+        fill="hsl(var(--accent))"
+      />
+    </svg>
+  );
 
 export default function SuperChargePage() {
   const {
@@ -26,7 +52,7 @@ export default function SuperChargePage() {
   if (loading) {
     return (
       <div className="flex flex-col items-center justify-center min-h-screen bg-background p-4">
-        <Palette className="w-16 h-16 text-primary animate-pulse mb-4" />
+        <Logo />
         <h1 className="text-3xl font-headline text-primary">Super Charge</h1>
         <p className="text-muted-foreground">Loading your awesome journey...</p>
       </div>
