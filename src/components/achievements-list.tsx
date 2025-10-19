@@ -85,5 +85,3 @@ const AchievementsList: React.FC<AchievementsListProps> = ({
 };
 
 export default AchievementsList;
-
-    

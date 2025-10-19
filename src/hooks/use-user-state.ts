@@ -45,21 +45,25 @@ export function useUserState() {
         if (!parsedState.completedTasksLog) parsedState.completedTasksLog = [];
         if (!parsedState.lastRoutineResetDate) parsedState.lastRoutineResetDate = null;
         
+        const today = new Date().toISOString().split('T')[0];
+        
+        // Reset routine if it's a new day
+        if (parsedState.lastRoutineResetDate !== today) {
+            parsedState.routine = parsedState.routine.map(task => ({ ...task, completed: false, completedDate: undefined }));
+            parsedState.lastRoutineResetDate = today;
+        }
+        
         setState(parsedState);
 
-        const today = new Date().toISOString().split('T')[0];
         // Fetch daily motivation if it's a new day
         if (parsedState.user && parsedState.lastMotivationDate !== today) {
           fetchDailyMotivation(parsedState.user, today);
-        }
-        // Reset routine if it's a new day
-        if (parsedState.lastRoutineResetDate !== today) {
-            resetRoutine(parsedState, today);
         }
       }
     } catch (error) {
       console.error('Failed to load state from localStorage', error);
       localStorage.removeItem('supercharge_state');
+      setState(getInitialState());
     } finally {
         setLoading(false);
     }
@@ -92,25 +96,22 @@ export function useUserState() {
   const setUser = useCallback((user: User) => {
     const today = new Date().toISOString().split('T')[0];
     setState(s => {
-      const newState = { ...getInitialState(), user, lastRoutineResetDate: today };
-      if (!s.dailyMotivation || s.lastMotivationDate !== today) {
-          fetchDailyMotivation(user, today);
-      } else {
-        newState.dailyMotivation = s.dailyMotivation;
-        newState.lastMotivationDate = s.lastMotivationDate;
+      const newState: UserState = {
+        ...getInitialState(), 
+        user, 
+        lastRoutineResetDate: today,
+        dailyMotivation: s.lastMotivationDate === today ? s.dailyMotivation : null,
+        lastMotivationDate: s.lastMotivationDate === today ? s.lastMotivationDate : null,
+      };
+
+      if (newState.dailyMotivation === null) {
+        fetchDailyMotivation(user, today);
       }
+      
       return newState;
     });
   }, []);
   
-  const resetRoutine = (currentState: UserState, today: string) => {
-    setState({
-        ...currentState,
-        routine: currentState.routine.map(task => ({ ...task, completed: false, completedDate: undefined })),
-        lastRoutineResetDate: today
-    });
-  };
-
   const generateRoutine = useCallback(async () => {
     if (!state.user) return;
     setIsGeneratingRoutine(true);
@@ -125,12 +126,18 @@ export function useUserState() {
         id: uuidv4(),
         completed: false,
       }));
-      setState(s => ({ ...s, routine: newRoutine }));
+      
+      setState(s => {
+          const newState = { ...s, routine: newRoutine };
+          checkAchievements(newState);
+          return newState;
+      });
+
       toast({
         title: "تم إنشاء خطتك!",
         description: "تم إنشاء خطتك اليومية الجديدة بنجاح.",
       });
-      checkAchievements({ ...state, routine: newRoutine });
+
     } catch (error) {
       console.error('Failed to generate routine', error);
       toast({
@@ -141,7 +148,7 @@ export function useUserState() {
     } finally {
       setIsGeneratingRoutine(false);
     }
-  }, [state.user, toast, state]);
+  }, [state.user, toast]);
 
   const checkAchievements = useCallback((newState: UserState) => {
     const newToasts: any[] = [];
@@ -160,42 +167,43 @@ export function useUserState() {
     });
 
     if (newlyUnlocked.length > 0) {
-      let newXp = newState.progress.xp + achievementXp;
-      let newLevel = newState.progress.level;
-      let xpForNextLevel = getXPForNextLevel(newLevel);
-      
-      while (newXp >= xpForNextLevel) {
-          newXp -= xpForNextLevel;
-          newLevel++;
-          newToasts.push({
-              title: `🎉 وصلت إلى المستوى ${newLevel}!`,
-              description: `مكافأة الإنجاز دفعتك للأعلى!`,
-          });
-          xpForNextLevel = getXPForNextLevel(newLevel);
-      }
-
-      setState(s => ({
-        ...s,
-        unlockedAchievements: [...s.unlockedAchievements, ...newlyUnlocked],
-        progress: {
-          ...s.progress,
-          xp: newXp,
-          level: newLevel,
+      setState(s => {
+        let newXp = s.progress.xp + achievementXp;
+        let newLevel = s.progress.level;
+        let xpForNextLevel = getXPForNextLevel(newLevel);
+        
+        while (newXp >= xpForNextLevel) {
+            newXp -= xpForNextLevel;
+            newLevel++;
+            newToasts.push({
+                title: `🎉 وصلت إلى المستوى ${newLevel}!`,
+                description: `مكافأة الإنجاز دفعتك للأعلى!`,
+            });
+            xpForNextLevel = getXPForNextLevel(newLevel);
         }
-      }));
 
-      newToasts.forEach(t => toast(t));
+        newToasts.forEach(t => toast(t));
+        
+        return {
+          ...s,
+          unlockedAchievements: [...s.unlockedAchievements, ...newlyUnlocked],
+          progress: {
+            ...s.progress,
+            xp: newXp,
+            level: newLevel,
+          }
+        };
+      });
     }
 
   }, [toast]);
 
   const completeTask = useCallback((taskId: string) => {
-    let completedTask: RoutineTask | undefined;
-    let leveledUp = false;
-
     setState(s => {
+      let completedTask: RoutineTask | undefined;
       const newRoutine = s.routine.map(task => {
-        if (task.id === taskId && !task.completed) {
+        if (task.id === taskId) {
+          if (task.completed) return task; // Already completed, do nothing
           completedTask = { ...task, completed: true, completedDate: new Date().toISOString().split('T')[0] };
           return completedTask;
         }
@@ -204,6 +212,7 @@ export function useUserState() {
 
       if (!completedTask) return s;
 
+      let leveledUp = false;
       const today = new Date().toISOString().split('T')[0];
       const newCompletedTasksLog: CompletedTaskLog[] = [...s.completedTasksLog, { taskId, date: today, category: completedTask.category }];
       const newCategoryCounts = { ...s.progress.categoryCounts, [completedTask.category]: (s.progress.categoryCounts[completedTask.category] || 0) + 1 };
