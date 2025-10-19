@@ -126,7 +126,7 @@ export default function SuperChargePage() {
                 <h1 className="text-2xl font-headline font-black text-primary tracking-wider uppercase">
                     Super Charge
                 </h1>
-                <SidebarTrigger className="md:hidden" />
+                <SidebarTrigger />
                 </div>
             </header>
             
