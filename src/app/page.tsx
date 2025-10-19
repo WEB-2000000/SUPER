@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useMemo } from 'react';
-import { Flame } from 'lucide-react';
+import { Palette } from 'lucide-react';
 import { useUserState } from '@/hooks/use-user-state';
 import OnboardingForm from '@/components/onboarding-form';
 import GamificationSummary from '@/components/gamification-summary';
@@ -26,7 +26,7 @@ export default function SuperChargePage() {
   if (loading) {
     return (
       <div className="flex flex-col items-center justify-center min-h-screen bg-background p-4">
-        <Flame className="w-16 h-16 text-primary animate-pulse mb-4" />
+        <Palette className="w-16 h-16 text-primary animate-pulse mb-4" />
         <h1 className="text-3xl font-headline text-primary">Super Charge</h1>
         <p className="text-muted-foreground">Loading your awesome journey...</p>
       </div>
