@@ -20,14 +20,14 @@ import {
   Loader2,
   Sparkles,
   ListTodo,
+  ChevronDown,
 } from 'lucide-react';
 import { Badge } from './ui/badge';
 import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from "@/components/ui/accordion";
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "@/components/ui/collapsible";
 import { cn } from '@/lib/utils';
 
 type DailyRoutineProps = {
@@ -55,42 +55,50 @@ const TaskItem: React.FC<{ task: RoutineTask; onComplete: (id: string) => void, 
   const isCompletedToday = task.completed && task.completedDate === today;
 
   return (
-    <AccordionItem value={task.id} className="border-b-0 mb-2">
-      <div className={cn(
-        "flex items-center gap-4 p-4 rounded-lg transition-all duration-300 border",
-        isCompletedToday ? 'bg-primary/10 border-primary/20' : 'bg-card border-border hover:border-primary/50'
-      )}>
-        <Checkbox
-          id={task.id}
-          checked={isCompletedToday}
-          onCheckedChange={() => !isCompletedToday && onComplete(task.id)}
-          aria-label={`Mark ${task.task} as complete`}
-          className="h-6 w-6 rounded-md"
-        />
-        <div className="flex-1 text-right">
-          <label
-            htmlFor={task.id}
-            className={cn(
-              "font-bold text-lg leading-none transition-colors cursor-pointer",
-              isCompletedToday ? 'line-through text-muted-foreground' : 'text-foreground'
-            )}
-          >
-            {task.task}
-          </label>
-          <div className="flex items-center justify-end gap-2 text-sm text-muted-foreground mt-1.5">
-            <Badge variant={isCompletedToday ? "default" : "secondary"} className="capitalize">{task.category}</Badge>
-            <span>{task.suggestedTime}</span>
-            <Icon className="w-4 h-4" />
-          </div>
+    <Collapsible asChild>
+        <div className={cn(
+            "rounded-lg transition-all duration-300 border-2",
+            isCompletedToday ? 'bg-primary/10 border-primary/30' : 'bg-card border-border'
+        )}>
+            <div className="flex items-center gap-4 p-4">
+                <Checkbox
+                id={task.id}
+                checked={isCompletedToday}
+                onCheckedChange={() => !isCompletedToday && onComplete(task.id)}
+                aria-label={`Mark ${task.task} as complete`}
+                className="h-6 w-6 rounded-md"
+                />
+                <div className="flex-1 text-right cursor-pointer" onClick={() => !isCompletedToday && onComplete(task.id)}>
+                <label
+                    htmlFor={task.id}
+                    className={cn(
+                    "font-bold text-lg leading-none transition-colors cursor-pointer",
+                    isCompletedToday ? 'line-through text-muted-foreground' : 'text-foreground'
+                    )}
+                >
+                    {task.task}
+                </label>
+                <div className="flex items-center justify-end gap-2 text-sm text-muted-foreground mt-1.5">
+                    <Badge variant={isCompletedToday ? "default" : "secondary"} className="capitalize">{task.category}</Badge>
+                    <span>{task.suggestedTime}</span>
+                    <Icon className="w-4 h-4" />
+                </div>
+                </div>
+                <CollapsibleTrigger asChild>
+                    <Button variant="ghost" size="icon" className="h-9 w-9 flex-shrink-0">
+                        <ChevronDown className="h-5 w-5 transition-transform duration-300 group-data-[state=open]:rotate-180" />
+                        <span className="sr-only">Toggle task details</span>
+                    </Button>
+                </CollapsibleTrigger>
+            </div>
+
+            <CollapsibleContent>
+                <div className="pb-4 px-6 text-muted-foreground text-base text-right border-t border-border/50 pt-3 mx-4">
+                    {task.description}
+                </div>
+            </CollapsibleContent>
         </div>
-        <AccordionTrigger className="p-2 rounded-md w-auto h-auto hover:bg-muted [&>svg]:size-5">
-           <span className="sr-only">Toggle task details</span>
-        </AccordionTrigger>
-      </div>
-      <AccordionContent className="p-4 pt-2 pr-16 text-muted-foreground text-base">
-        {task.description}
-      </AccordionContent>
-    </AccordionItem>
+    </Collapsible>
   );
 });
 
@@ -114,11 +122,11 @@ const DailyRoutine: React.FC<DailyRoutineProps> = ({
       </CardHeader>
       <CardContent>
         {routine.length > 0 ? (
-          <Accordion type="single" collapsible className="w-full">
+          <div className="w-full space-y-3">
             {routine.map((task) => (
               <TaskItem key={task.id} task={task} onComplete={completeTask} today={today} />
             ))}
-          </Accordion>
+          </div>
         ) : (
           <div className="text-center py-12 px-4 border-2 border-dashed border-border rounded-xl">
             <ListTodo className="mx-auto h-12 w-12 text-muted-foreground" />
