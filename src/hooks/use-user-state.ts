@@ -32,10 +32,6 @@ export function useUserState() {
   const [loading, setLoading] = useState(true);
   const [isGeneratingRoutine, setIsGeneratingRoutine] = useState(false);
   const { toast } = useToast();
-  
-  const [previousProgress, setPreviousProgress] = useState<UserState['progress']>(initialProgress);
-  const [previousRoutine, setPreviousRoutine] = useState<UserState['routine']>([]);
-  const [previousCompletedTasksLog, setPreviousCompletedTasksLog] = useState<UserState['completedTasksLog']>([]);
 
   useEffect(() => {
     setLoading(true);
@@ -47,7 +43,6 @@ export function useUserState() {
         if (!parsedState.progress) parsedState.progress = initialProgress;
         if (!parsedState.unlockedAchievements) parsedState.unlockedAchievements = [];
         if (!parsedState.completedTasksLog) parsedState.completedTasksLog = [];
-        if (!parsedState.lastRoutineResetDate) parsedState.lastRoutineResetDate = null;
         if (!Array.isArray(parsedState.routine)) parsedState.routine = [];
         
         const today = new Date().toISOString().split('T')[0];
@@ -58,9 +53,6 @@ export function useUserState() {
         }
         
         setState(parsedState);
-        setPreviousProgress(parsedState.progress);
-        setPreviousRoutine(parsedState.routine);
-        setPreviousCompletedTasksLog(parsedState.completedTasksLog);
 
         if (parsedState.user && parsedState.lastMotivationDate !== today) {
           fetchDailyMotivation(parsedState.user, today);
@@ -110,9 +102,11 @@ export function useUserState() {
     };
     setState(newState);
     
-    fetchDailyMotivation(user, today);
-
-  }, []);
+    // Avoid re-fetching if motivation for today already exists (less likely here, but good practice)
+    if (state.lastMotivationDate !== today) {
+        fetchDailyMotivation(user, today);
+    }
+  }, [state.lastMotivationDate]);
   
   const generateRoutine = useCallback(async () => {
     if (!state.user) return;
@@ -148,13 +142,13 @@ export function useUserState() {
     }
   }, [state.user, toast]);
 
-  const checkAchievements = useCallback(() => {
+  const checkAchievements = useCallback((currentState: UserState) => {
     const newToasts: any[] = [];
     let achievementXp = 0;
 
     const newlyUnlocked = achievements.filter(ach => 
-      !state.unlockedAchievements.includes(ach.id) && 
-      ach.isUnlocked(state.progress, state.completedTasksLog, state.routine)
+      !currentState.unlockedAchievements.includes(ach.id) && 
+      ach.isUnlocked(currentState.progress, currentState.completedTasksLog, currentState.routine)
     ).map(ach => {
       achievementXp += ach.xp;
       newToasts.push({
@@ -193,23 +187,14 @@ export function useUserState() {
         };
       });
     }
-
-  }, [state.unlockedAchievements, state.progress, state.completedTasksLog, state.routine, toast]);
+  }, [toast]);
   
   useEffect(() => {
-    if (loading) return;
-
-    if (
-      state.progress !== previousProgress ||
-      state.routine !== previousRoutine ||
-      state.completedTasksLog !== previousCompletedTasksLog
-    ) {
-        checkAchievements();
-        setPreviousProgress(state.progress);
-        setPreviousRoutine(state.routine);
-        setPreviousCompletedTasksLog(state.completedTasksLog);
+    if (!loading) {
+      checkAchievements(state);
     }
-  }, [state, loading, checkAchievements, previousProgress, previousRoutine, previousCompletedTasksLog]);
+  }, [state.progress.totalTasksCompleted, state.progress.level, loading, state.routine]);
+
 
   const completeTask = useCallback((taskId: string) => {
     setState(s => {
@@ -272,10 +257,9 @@ export function useUserState() {
   }, [toast]);
 
   const resetState = useCallback(() => {
-    setLoading(true);
     localStorage.removeItem('supercharge_state');
     setState(getInitialState());
-    setLoading(false);
+    setLoading(false); // Make sure loading is false
     toast({
         title: "تم البدء من جديد!",
         description: "تمت إعادة ضبط تقدمك. رحلة جديدة تبدأ الآن!",

@@ -1,3 +1,4 @@
+
 'use client';
 
 import React from 'react';
@@ -21,6 +22,7 @@ import {
   Sparkles,
   ListTodo,
   ChevronDown,
+  PartyPopper,
 } from 'lucide-react';
 import { Badge } from './ui/badge';
 import {
@@ -112,6 +114,8 @@ const DailyRoutine: React.FC<DailyRoutineProps> = ({
   isGeneratingRoutine,
   today,
 }) => {
+    const allTasksCompleted = routine.length > 0 && routine.every(task => task.completed && task.completedDate === today);
+
   return (
     <Card className="bg-transparent border-0 shadow-none md:border md:shadow-sm md:bg-card">
       <CardHeader>
@@ -122,11 +126,21 @@ const DailyRoutine: React.FC<DailyRoutineProps> = ({
       </CardHeader>
       <CardContent>
         {routine.length > 0 ? (
-          <div className="w-full space-y-3">
-            {routine.map((task) => (
-              <TaskItem key={task.id} task={task} onComplete={completeTask} today={today} />
-            ))}
-          </div>
+            allTasksCompleted ? (
+                <div className="text-center py-12 px-4 border-2 border-dashed border-accent/50 rounded-xl bg-accent/10">
+                    <PartyPopper className="mx-auto h-16 w-16 text-accent animate-in fade-in zoom-in" />
+                    <h3 className="mt-4 text-2xl font-bold text-accent font-headline">أحسنت! لقد أكملت كل شيء!</h3>
+                    <p className="text-foreground mt-2 mb-6 text-base max-w-prose mx-auto">
+                        لقد أنجزت جميع مهامك لهذا اليوم. استرح جيداً واستعد لتحديات جديدة غداً. أنت تقوم بعمل رائع!
+                    </p>
+                </div>
+            ) : (
+                <div className="w-full space-y-3">
+                    {routine.map((task) => (
+                    <TaskItem key={task.id} task={task} onComplete={completeTask} today={today} />
+                    ))}
+                </div>
+            )
         ) : (
           <div className="text-center py-12 px-4 border-2 border-dashed border-border rounded-xl">
             <ListTodo className="mx-auto h-12 w-12 text-muted-foreground" />
