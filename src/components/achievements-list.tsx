@@ -23,20 +23,20 @@ const AchievementsList: React.FC<AchievementsListProps> = ({
   const totalCount = achievements.length;
 
   return (
-    <Card className="bg-transparent border-0 shadow-none group-data-[collapsible=icon]:hidden md:bg-card md:border md:shadow-sm">
-      <CardHeader className="p-4">
-        <CardTitle className="font-headline text-xl flex items-center justify-between">
+    <Card className="bg-transparent border-0 shadow-none group-data-[collapsible=icon]:hidden flex-1 flex flex-col md:bg-card md:border md:shadow-sm">
+      <CardHeader className="p-2 pb-2">
+        <CardTitle className="font-headline text-lg flex items-center justify-between">
             <div className="flex items-center gap-2">
                 <Trophy className="text-accent" />
                 <span>الإنجازات</span>
             </div>
-            <span className="font-mono text-sm text-muted-foreground">{unlockedCount}/{totalCount}</span>
+            <span className="font-mono text-xs text-muted-foreground">{unlockedCount}/{totalCount}</span>
         </CardTitle>
       </CardHeader>
-      <CardContent className="p-4 pt-0">
+      <CardContent className="p-2 pt-0 flex-1">
         <TooltipProvider>
-          <ScrollArea className="h-48">
-            <div className="grid grid-cols-4 gap-3">
+          <ScrollArea className="h-full">
+            <div className="grid grid-cols-4 gap-2 p-1">
                 {achievements.map((ach) => {
                 const isUnlocked = unlockedAchievements.includes(ach.id);
                 const Icon = ach.icon;
@@ -44,15 +44,15 @@ const AchievementsList: React.FC<AchievementsListProps> = ({
                     <Tooltip key={ach.id} delayDuration={0}>
                     <TooltipTrigger asChild>
                         <div
-                        className={`relative flex items-center justify-center p-3 aspect-square rounded-lg border-2 transition-all duration-300
+                        className={`relative flex items-center justify-center p-2 aspect-square rounded-lg border-2 transition-all duration-300
                             ${
                             isUnlocked
                                 ? 'bg-accent/20 border-accent text-accent animate-in fade-in zoom-in-50'
                                 : 'bg-muted/30 border-muted/50 text-muted-foreground'
                             }`}
                         >
-                        <Icon className="w-7 h-7" />
-                        {!isUnlocked && <Lock className="w-3 h-3 absolute bottom-1 right-1 text-muted-foreground/50" />}
+                        <Icon className="w-6 h-6" />
+                        {!isUnlocked && <Lock className="w-2.5 h-2.5 absolute bottom-0.5 right-0.5 text-muted-foreground/50" />}
                         </div>
                     </TooltipTrigger>
                     <TooltipContent>
