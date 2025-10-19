@@ -19,7 +19,7 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
 import { Button } from '@/components/ui/button';
-import { Trash2, Settings, ListTodo, TrendingUp } from 'lucide-react';
+import { Trash2, Settings, ListTodo, TrendingUp, Zap } from 'lucide-react';
 import { SidebarProvider, Sidebar, SidebarTrigger, SidebarContent, SidebarHeader, SidebarFooter, SidebarMenu, SidebarMenuItem, SidebarMenuButton } from '@/components/ui/sidebar';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import Link from 'next/link';
@@ -27,15 +27,7 @@ import Link from 'next/link';
 
 const Logo = () => (
     <div className="bg-primary/10 p-4 rounded-full mb-6">
-        <svg
-            xmlns="http://www.w3.org/2000/svg"
-            viewBox="0 0 24 24"
-            fill="currentColor"
-            className="w-16 h-16 text-primary"
-        >
-            <path d="M14.25 2.25A5.25 5.25 0 0 0 9 7.5v9.014a3.736 3.736 0 0 1-2.25.986.75.75 0 0 0-.75.75v.75a.75.75 0 0 0 .75.75h4.5a.75.75 0 0 0 .75-.75v-.75a.75.75 0 0 0-.75-.75 3.736 3.736 0 0 1-2.25-.986V7.5a3.75 3.75 0 0 1 3.75-3.75h.75a.75.75 0 0 0 .75-.75V2.25a.75.75 0 0 0-.75-.75h-.75Z" />
-            <path d="M15 3.75a.75.75 0 0 0-.75.75v.75a.75.75 0 0 0 .75.75h.75a5.25 5.25 0 0 1 5.25 5.25v9.014a3.736 3.736 0 0 0 2.25.986.75.75 0 0 1 .75.75v.75a.75.75 0 0 1-.75.75h-4.5a.75.75 0 0 1-.75-.75v-.75a.75.75 0 0 1 .75-.75 3.736 3.736 0 0 0 2.25-.986V10.5a3.75 3.75 0 0 0-3.75-3.75h-.75a.75.75 0 0 1-.75-.75V5.25a.75.75 0 0 1 .75-.75h.75Z" />
-        </svg>
+        <Zap className="w-16 h-16 text-primary" />
     </div>
 );
 
