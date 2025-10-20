@@ -135,7 +135,7 @@ export default function ProgressPage() {
         <header className="sticky top-0 z-10 bg-background/80 backdrop-blur-md border-b">
             <div className="container mx-auto flex items-center justify-between p-4">
             <h1 className="text-2xl font-headline font-black text-primary tracking-wider uppercase">
-                تتبع التقدم
+                تحليل التقدم
             </h1>
             <SidebarTrigger />
             </div>
@@ -148,3 +148,5 @@ export default function ProgressPage() {
     </SidebarProvider>
   );
 }
+
+    
