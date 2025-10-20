@@ -31,6 +31,7 @@ export function useUserState() {
   const [state, setState] = useState<UserState>(getInitialState());
   const [loading, setLoading] = useState(true);
   const [isGeneratingRoutine, setIsGeneratingRoutine] = useState(false);
+  const [achievementToasts, setAchievementToasts] = useState<any[]>([]);
   const { toast } = useToast();
 
   useEffect(() => {
@@ -159,7 +160,7 @@ export function useUserState() {
     });
 
     if (newlyUnlocked.length > 0) {
-      newToasts.forEach(t => toast(t));
+      setAchievementToasts(newToasts);
 
       setState(s => {
         let newXp = s.progress.xp + achievementXp;
@@ -169,10 +170,10 @@ export function useUserState() {
         while (newXp >= xpForNextLevel) {
             newXp -= xpForNextLevel;
             newLevel++;
-            toast({
+            setAchievementToasts(prev => [...prev, {
                 title: `🎉 وصلت إلى المستوى ${newLevel}!`,
                 description: `مكافأة الإنجاز دفعتك للأعلى!`,
-            });
+            }]);
             xpForNextLevel = getXPForNextLevel(newLevel);
         }
         
@@ -187,22 +188,30 @@ export function useUserState() {
         };
       });
     }
-  }, [toast]);
+  }, []);
   
+  useEffect(() => {
+    if (achievementToasts.length > 0) {
+      achievementToasts.forEach(t => toast(t));
+      setAchievementToasts([]);
+    }
+  }, [achievementToasts, toast]);
+
   useEffect(() => {
     if (!loading) {
       checkAchievements(state);
     }
-  }, [state.progress.totalTasksCompleted, state.progress.level, loading, state.routine]);
+  }, [state.progress.totalTasksCompleted, state.progress.level, loading, state.routine, checkAchievements]);
 
 
   const completeTask = useCallback((taskId: string) => {
     setState(s => {
       let completedTask: RoutineTask | undefined;
+      const today = new Date().toISOString().split('T')[0];
       const newRoutine = s.routine.map(task => {
         if (task.id === taskId) {
-          if (task.completed) return task;
-          completedTask = { ...task, completed: true, completedDate: new Date().toISOString().split('T')[0] };
+          if (task.completed && task.completedDate === today) return task;
+          completedTask = { ...task, completed: true, completedDate: today };
           return completedTask;
         }
         return task;
@@ -211,7 +220,6 @@ export function useUserState() {
       if (!completedTask) return s;
 
       let leveledUp = false;
-      const today = new Date().toISOString().split('T')[0];
       const newCompletedTasksLog: CompletedTaskLog[] = [...s.completedTasksLog, { taskId, date: today, category: completedTask.category }];
       const newCategoryCounts = { ...s.progress.categoryCounts, [completedTask.category]: (s.progress.categoryCounts[completedTask.category] || 0) + 1 };
       
