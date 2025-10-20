@@ -312,3 +312,4 @@ const ProgressCharts: React.FC<ProgressChartsProps> = ({ completedTasksLog }) =>
 export default ProgressCharts;
 
     
+    
