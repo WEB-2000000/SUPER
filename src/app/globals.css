@@ -29,9 +29,9 @@ body {
     --ring: 210 90% 60%;
     --chart-1: 210 90% 60%;
     --chart-2: 48 96% 53%;
-    --chart-3: 160 70% 45%;
-    --chart-4: 280 70% 55%;
-    --chart-5: 340 80% 60%;
+    --chart-3: 160 80% 45%;
+    --chart-4: 280 80% 60%;
+    --chart-5: 340 85% 65%;
     --radius: 0.75rem;
     --sidebar-background: 0 0% 98%;
     --sidebar-foreground: 240 5.3% 26.1%;
@@ -64,9 +64,9 @@ body {
     --ring: 210 90% 60%;
     --chart-1: 210 90% 60%;
     --chart-2: 48 96% 53%;
-    --chart-3: 160 70% 45%;
-    --chart-4: 280 70% 55%;
-    --chart-5: 340 80% 60%;
+    --chart-3: 160 80% 45%;
+    --chart-4: 280 80% 60%;
+    --chart-5: 340 85% 65%;
     --sidebar-background: 240 5.9% 10%;
     --sidebar-foreground: 240 4.8% 95.9%;
     --sidebar-primary: 224.3 76.3% 48%;
