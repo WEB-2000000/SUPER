@@ -24,7 +24,7 @@ import {
   ChevronDown,
   PartyPopper,
 } from 'lucide-react';
-import { Badge } from './ui/badge';
+import { Badge } from '@/components/ui/badge';
 import {
   Collapsible,
   CollapsibleContent,
