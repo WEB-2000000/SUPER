@@ -19,7 +19,7 @@ import {
 } from '@/components/ui/chart';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import type { CompletedTaskLog } from '@/lib/types';
-import { eachDayOfInterval, endOfMonth, endOfWeek, format, startOfMonth, startOfWeek, parseISO } from 'date-fns';
+import { eachDayOfInterval, endOfMonth, endOfWeek, format, startOfMonth, startOfWeek, parseISO, startOfDay } from 'date-fns';
 import { arSA } from 'date-fns/locale';
 import { Trophy, CalendarCheck, Zap, BrainCircuit, Bike, Briefcase, Coffee, User as UserIcon } from 'lucide-react';
 import { Badge } from './ui/badge';
@@ -95,7 +95,10 @@ const ProgressCharts: React.FC<ProgressChartsProps> = ({ completedTasksLog }) =>
     });
 
     const favoriteCategory = Object.entries(categoryCounts).reduce(
-        (max, [category, count]) => count > max.count ? { name: (chartConfig as any)[category]?.label || category, count } : max,
+        (max, [category, count]) => {
+          const categoryKey = Object.keys(chartConfig).find(key => (chartConfig as any)[key].label === category) || category.toLowerCase();
+          return count > max.count ? { name: (chartConfig as any)[categoryKey]?.label || category, count } : max
+        },
         { name: 'لا يوجد', count: 0 }
     );
     
@@ -149,9 +152,9 @@ const ProgressCharts: React.FC<ProgressChartsProps> = ({ completedTasksLog }) =>
     }));
 
     completedTasksLog.forEach(log => {
-      const logDate = parseISO(log.date);
-      if (logDate >= start && logDate <= end) {
-        const dayIndex = days.findIndex(d => d.getDay() === logDate.getDay());
+      const logDate = startOfDay(parseISO(log.date));
+      if (logDate >= startOfDay(start) && logDate <= startOfDay(end)) {
+        const dayIndex = days.findIndex(d => startOfDay(d).getTime() === logDate.getTime());
         if (dayIndex !== -1 && Object.hasOwnProperty.call(data[dayIndex], log.category)) {
           (data[dayIndex] as any)[log.category]++;
         }
@@ -176,10 +179,10 @@ const ProgressCharts: React.FC<ProgressChartsProps> = ({ completedTasksLog }) =>
     }));
 
     completedTasksLog.forEach(log => {
-        const logDate = parseISO(log.date);
-        if (logDate >= start && logDate <= end) {
+        const logDate = startOfDay(parseISO(log.date));
+        if (logDate >= startOfDay(start) && logDate <= startOfDay(end)) {
           const dayIndex = logDate.getDate() - 1;
-          if (data[dayIndex] && Object.hasOwnProperty.call(data[dayIndex], log.category)) {
+          if (dayIndex >= 0 && dayIndex < data.length && Object.hasOwnProperty.call(data[dayIndex], log.category)) {
             (data[dayIndex] as any)[log.category]++;
           }
         }
@@ -225,7 +228,7 @@ const ProgressCharts: React.FC<ProgressChartsProps> = ({ completedTasksLog }) =>
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">الفئة المفضلة</CardTitle>
-            {favoriteCategory.name !== 'لا يوجد' && React.createElement((chartConfig as any)[favoriteCategory.name.toLowerCase()]?.icon || Zap, { className: "h-4 w-4 text-muted-foreground" })}
+            {favoriteCategory.name !== 'لا يوجد' && React.createElement((chartConfig as any)[Object.keys(chartConfig).find(key => (chartConfig as any)[key].label === favoriteCategory.name) || 'tasks']?.icon || Zap, { className: "h-4 w-4 text-muted-foreground" })}
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{favoriteCategory.name}</div>
@@ -310,6 +313,3 @@ const ProgressCharts: React.FC<ProgressChartsProps> = ({ completedTasksLog }) =>
 };
 
 export default ProgressCharts;
-
-    
-    
