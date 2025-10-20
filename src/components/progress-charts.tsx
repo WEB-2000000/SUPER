@@ -29,9 +29,6 @@ type ProgressChartsProps = {
 };
 
 const chartConfig = {
-  tasks: {
-    label: "المهام",
-  },
   learning: {
     label: "تعلم",
     color: "hsl(var(--chart-1))",
@@ -58,6 +55,14 @@ const chartConfig = {
     icon: UserIcon,
   },
 } satisfies ChartConfig;
+
+const categoryLabelToKey = Object.entries(chartConfig).reduce((acc, [key, value]) => {
+    if (value.label) {
+        acc[value.label] = key;
+    }
+    return acc;
+}, {} as Record<string, string>);
+
 
 const ProgressCharts: React.FC<ProgressChartsProps> = ({ completedTasksLog }) => {
   const {
@@ -155,8 +160,9 @@ const ProgressCharts: React.FC<ProgressChartsProps> = ({ completedTasksLog }) =>
       const logDate = startOfDay(parseISO(log.date));
       if (logDate >= startOfDay(start) && logDate <= startOfDay(end)) {
         const dayIndex = days.findIndex(d => startOfDay(d).getTime() === logDate.getTime());
-        if (dayIndex !== -1 && Object.hasOwnProperty.call(data[dayIndex], log.category)) {
-          (data[dayIndex] as any)[log.category]++;
+        const categoryKey = categoryLabelToKey[log.category];
+        if (dayIndex !== -1 && categoryKey && Object.hasOwnProperty.call(data[dayIndex], categoryKey)) {
+          (data[dayIndex] as any)[categoryKey]++;
         }
       }
     });
@@ -182,8 +188,9 @@ const ProgressCharts: React.FC<ProgressChartsProps> = ({ completedTasksLog }) =>
         const logDate = startOfDay(parseISO(log.date));
         if (logDate >= startOfDay(start) && logDate <= startOfDay(end)) {
           const dayIndex = logDate.getDate() - 1;
-          if (dayIndex >= 0 && dayIndex < data.length && Object.hasOwnProperty.call(data[dayIndex], log.category)) {
-            (data[dayIndex] as any)[log.category]++;
+          const categoryKey = categoryLabelToKey[log.category];
+          if (dayIndex >= 0 && dayIndex < data.length && categoryKey && Object.hasOwnProperty.call(data[dayIndex], categoryKey)) {
+            (data[dayIndex] as any)[categoryKey]++;
           }
         }
     });
@@ -228,7 +235,7 @@ const ProgressCharts: React.FC<ProgressChartsProps> = ({ completedTasksLog }) =>
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">الفئة المفضلة</CardTitle>
-            {favoriteCategory.name !== 'لا يوجد' && React.createElement((chartConfig as any)[Object.keys(chartConfig).find(key => (chartConfig as any)[key].label === favoriteCategory.name) || 'tasks']?.icon || Zap, { className: "h-4 w-4 text-muted-foreground" })}
+            {favoriteCategory.name !== 'لا يوجد' && React.createElement((chartConfig as any)[Object.keys(chartConfig).find(key => (chartConfig as any)[key].label === favoriteCategory.name) || 'learning']?.icon || Zap, { className: "h-4 w-4 text-muted-foreground" })}
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{favoriteCategory.name}</div>
@@ -313,3 +320,5 @@ const ProgressCharts: React.FC<ProgressChartsProps> = ({ completedTasksLog }) =>
 };
 
 export default ProgressCharts;
+
+    
