@@ -45,36 +45,42 @@ const AchievementsList: React.FC<AchievementsListProps> = ({
       </CardHeader>
       <CardContent>
         <TooltipProvider>
-            <div className="grid grid-cols-5 sm:grid-cols-6 md:grid-cols-8 lg:grid-cols-10 xl:grid-cols-12 gap-2">
+            <div className="grid grid-cols-5 sm:grid-cols-6 md:grid-cols-8 lg:grid-cols-10 xl:grid-cols-12 gap-4">
                 {achievements.map((ach) => {
                 const isUnlocked = unlockedAchievements.includes(ach.id);
                 const Icon = ach.icon;
                 const tierStyle = tierStyles[ach.tier] || tierStyles.bronze;
 
                 return (
-                    <Tooltip key={ach.id} delayDuration={0}>
-                    <TooltipTrigger asChild>
-                        <div
-                        className={cn(`relative flex items-center justify-center p-2 aspect-square rounded-lg border-2 transition-all duration-300`,
-                            isUnlocked
-                                ? `${tierStyle} animate-in fade-in zoom-in-50`
-                                : 'bg-muted/30 border-muted/50 text-muted-foreground'
-                            )}
-                        >
-                        <Icon className="w-6 h-6" />
-                        {!isUnlocked && <Lock className="w-2 h-2 absolute bottom-1 right-1 text-muted-foreground/50" />}
-                        </div>
-                    </TooltipTrigger>
-                    <TooltipContent className={cn("border-2", isUnlocked ? tierStyle.split(' ')[0] : 'border-border')}>
-                        <p className="font-bold text-base">{ach.name}</p>
-                        <p className="text-sm text-muted-foreground">{ach.description}</p>
-                        {isUnlocked ? (
-                        <p className={cn("font-semibold mt-1", tierStyle.split(' ')[2])}>+ {ach.xp} XP</p>
-                        ) : (
-                        <p className="text-red-400 font-semibold mt-1">مغلق</p>
-                        )}
-                    </TooltipContent>
-                    </Tooltip>
+                    <div key={ach.id} className="flex flex-col items-center gap-1">
+                        <Tooltip delayDuration={0}>
+                            <TooltipTrigger asChild>
+                                <div
+                                className={cn(`relative flex items-center justify-center p-2 aspect-square rounded-lg border-2 transition-all duration-300`,
+                                    isUnlocked
+                                        ? `${tierStyle} animate-in fade-in zoom-in-50`
+                                        : 'bg-muted/30 border-muted/50 text-muted-foreground'
+                                    )}
+                                >
+                                <Icon className="w-6 h-6" />
+                                {!isUnlocked && <Lock className="w-2 h-2 absolute bottom-1 right-1 text-muted-foreground/50" />}
+                                </div>
+                            </TooltipTrigger>
+                            <TooltipContent className={cn("border-2", isUnlocked ? tierStyle.split(' ')[0] : 'border-border')}>
+                                <p className="font-bold text-base">{ach.name}</p>
+                                <p className="text-sm text-muted-foreground">{ach.description}</p>
+                                {isUnlocked ? (
+                                <p className={cn("font-semibold mt-1", tierStyle.split(' ')[2])}>+ {ach.xp} XP</p>
+                                ) : (
+                                <p className="text-red-400 font-semibold mt-1">مغلق</p>
+                                )}
+                            </TooltipContent>
+                        </Tooltip>
+                        <span className={cn(
+                            "text-xs text-center w-full truncate",
+                            !isUnlocked && "text-muted-foreground"
+                        )}>{ach.name}</span>
+                    </div>
                 );
                 })}
             </div>
